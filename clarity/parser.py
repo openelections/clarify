@@ -98,7 +98,7 @@ class JurisdictionResults(object):
 
         for c in self._parse_choices(el, precinct_lookup, contest):
             contest.add_choice(c)
-            
+
         return contest
 
     def _parse_no_choice_results(self, el, precinct_lookup, contest):
@@ -136,7 +136,7 @@ class JurisdictionResults(object):
         vote_type = vt_el.attrib['name']
         choice_results = []
         choice_results.append(Result(
-          contest=contest,    
+          contest=contest,
           vote_type=vote_type,
           votes=int(vt_el.attrib['votes']),
           choice=choice
@@ -145,7 +145,7 @@ class JurisdictionResults(object):
         for precinct_el in vt_el.xpath('/Precinct'):
             precinct = precinct_lookup[precinct_el.attrib['name']]
             choice_results.append(Result(
-                contest=contest,    
+                contest=contest,
                 vote_type=vote_type,
                 precinct=precinct,
                 votes=int(precinct_el.attrib['votes']),
@@ -156,8 +156,13 @@ class JurisdictionResults(object):
 
     def _parse_boolean(self, s):
         return s == "true"
-        
-Precinct = namedtuple('Precinct', ['name', 'total_voters', 'ballots_cast', 'percent_reporting'])
+
+class Precinct(namedtuple('Precinct', ['name', 'total_voters', 'ballots_cast',
+        'percent_reporting'])
+
+    def __str__(self):
+        return self.name
+
 
 class Contest(namedtuple('Contest', ['key', 'text', 'vote_for', 'is_question',
         'precincts_reporting', 'precincts_reported'])):
@@ -165,6 +170,9 @@ class Contest(namedtuple('Contest', ['key', 'text', 'vote_for', 'is_question',
         super(Contest, self).__init__(*args, **kwargs)
         self._choices = []
         self._results = []
+
+    def __str__(self):
+        return self.text
 
     @property
     def results(self):
@@ -180,10 +188,13 @@ class Contest(namedtuple('Contest', ['key', 'text', 'vote_for', 'is_question',
     def add_choice(self, c):
         self._choices.append(c)
         self._results.extend(c.results)
-        
+
 class Choice(namedtuple('Choice', ['contest', 'key', 'text', 'total_votes'])):
     def __init__(self, *args, **kwargs):
         self._results = []
+
+    def __str__(self):
+        return self.text
 
     @property
     def results(self):
@@ -192,7 +203,5 @@ class Choice(namedtuple('Choice', ['contest', 'key', 'text', 'total_votes'])):
     def add_result(self, r):
         self._results.append(r)
 
-
-Result = namedtuple('Result', ['contest', 'vote_type', 'precinct', 'votes',
-    'choice'])
-
+class Result(namedtuple('Result', ['contest', 'vote_type', 'precinct',
+        'votes', 'choice'])
