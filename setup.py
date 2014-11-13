@@ -15,6 +15,7 @@ setup(
         'lxml',
         'cssselect',
         'six',
+        'python-dateutil',
     ],
     tests_require=[
         'nose',
