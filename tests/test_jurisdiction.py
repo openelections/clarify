@@ -48,6 +48,16 @@ class TestJurisdiction(TestCase):
         expected_jurisdiction_count = 0
         self.assertEqual(len(jurisdictions), expected_jurisdiction_count)
 
+    def test_get_sub_jurisdictions_none_web01(self):
+        """A jurisdiction with no sub-jurisdictions with Web01 in url should return an empty list"""
+        # Construct a Jurisdiction for Middlesex County, NJ 2013 General Election
+        url = 'http://results.enr.clarityelections.com/NJ/Middlesex/46982/117336/Web01/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='county')
+        jurisdictions = jurisdiction.get_subjurisdictions()
+        # A city has no sub-jurisdictions with results
+        expected_jurisdiction_count = 0
+        self.assertEqual(len(jurisdictions), expected_jurisdiction_count)
+
     def test_report_url_xml(self):
         # Construct a Jurisdiction for Appling County, GA 2014 Primary Election
         url = 'http://results.enr.clarityelections.com/GA/Appling/52178/139522/en/summary.html'

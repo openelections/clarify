@@ -34,6 +34,8 @@ class Jurisdiction(object):
         """
 
         subjurisdictions_url = self._get_subjurisdictions_url()
+        if not subjurisdictions_url:
+            return []
         try:
             r = requests.get(subjurisdictions_url)
             r.raise_for_status()
@@ -50,10 +52,13 @@ class Jurisdiction(object):
         return self.parsed_url.path.split('/')[1]
 
     def _get_subjurisdictions_url(self):
-        newpath = '/'.join(self.parsed_url.path.split('/')[:-1]) + '/select-county.html'
-        parts = (self.parsed_url.scheme, self.parsed_url.netloc, newpath, self.parsed_url.query,
-                 self.parsed_url.fragment)
-        return urlparse.urlunsplit(parts)
+        if self.level != 'state':
+            return None
+        else:
+            newpath = '/'.join(self.parsed_url.path.split('/')[:-1]) + '/select-county.html'
+            parts = (self.parsed_url.scheme, self.parsed_url.netloc, newpath, self.parsed_url.query,
+                     self.parsed_url.fragment)
+            return urlparse.urlunsplit(parts)
 
     def _scrape_subjurisdiction_paths(self, html):
         tree = lxml.html.fromstring(html)
