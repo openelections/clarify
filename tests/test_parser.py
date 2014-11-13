@@ -321,7 +321,7 @@ class TestJurisdictionResults(unittest.TestCase):
         # Overvotes and undervotes
         num_pseudo_candidates = 2
         num_expected_results = ((num_candidates + num_pseudo_candidates) *
-            num_precincts)
+            (num_precincts + 1))
 
         er = JurisdictionResults()
         er.parse(TEST_XML)
@@ -341,5 +341,4 @@ class TestJurisdictionResults(unittest.TestCase):
         self.assertEqual(precinct.voter_turnout, 0)
         self.assertEqual(precinct.percentReporting, 4)
 
-        #results = er.choice_results()
-        #self.assertEqual(len(results), num_expected_results)
+        self.assertEqual(len(er.results), num_expected_results)
