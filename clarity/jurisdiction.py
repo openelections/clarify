@@ -6,57 +6,80 @@ from lxml.cssselect import CSSSelector
 
 
 class Jurisdiction(object):
+
     """
     Returns an object representing a state, county or city that has
     a Clarity election results page, and methods for retrieving
     additional information about those results.
     """
 
-    def __init__(self, url, level):
+    def __init__(self, url, level, name=''):
         """
         Should we check that url contains "http://results.enr.clarityelections.com/"?
         Should we check that level is one of ('state','county','city')?
         """
 
-        self.url = url
+        self.url = url # always a summary.html
+        self.state = self._get_state_from_url()
         self.level = level
+        self.name = name
 
-
-    def get_sub_jurisdictions(self):
+    def get_subjurisdictions(self):
         """
-        Returns an array of sub-jurisdictions depending on the level
+        Returns a list of subjurisdictions depending on the level
         of the main jurisdiction. States always have counties, and
         counties and cities may have precincts.
         """
 
-        # load url
-        # parse counties if state
+        subjurisdictions_url = self._get_subjurisdictions_url()
+        try:
+            r = requests.get(subjurisdictions_url)
+            r.raise_for_status()
+            results = [(self._clarity_subjurisdiction_url(path), subjurisdiction) for path, subjurisdiction
+                    in self._scrape_subjurisdiction_paths(r.text)]
+            return [Jurisdiction(url, 'county', name) for url, name in results]
+        except requests.exceptions.HTTPError:
+            return []
 
-        county_url = get_county_url()
-        r = requests.get(county_url)
-        r.raise_for_status()
-        return [(self._clarity_county_url(path), county) for path, county
-                in self._scrape_county_paths(r.text)]
+    def _get_state_from_url(self):
+        parsed = urlparse.urlsplit(self.url)
+        return parsed.path.split('/')[1]
 
-    def get_county_url(self):
+    def _get_subjurisdictions_url(self):
         parsed = urlparse.urlsplit(self.url)
         newpath = '/'.join(parsed.path.split('/')[:-1]) + '/select-county.html'
         parts = (parsed.scheme, parsed.netloc, newpath, parsed.query,
                  parsed.fragment)
         return urlparse.urlunsplit(parts)
 
-    def _clarity_county_url(self, path):
-        url = self._clarity_election_base_url(self.CLARITY_PORTAL_URL +
-            path.lstrip('/'))
+    def _scrape_subjurisdiction_paths(self, html):
+        tree = lxml.html.fromstring(html)
+        sel = CSSSelector('ul li a')
+        results = sel(tree)
+        return [(match.get('value'), match.get('id')) for match in results]
+
+    def _clarity_subjurisdiction_url(self, path):
+        url = self._clarity_state_url() + "/".join(path.split('/')[:3])
         r = requests.get(url)
         r.raise_for_status()
-        redirect_path = self._scrape_county_redirect_path(r.text)
+        redirect_path = self._scrape_subjurisdiction_summary_path(r.text)
         return url + redirect_path
 
-    def detail_xml_url(self):
-        """
-        Returns a url to a zip file containing detailed results
-        data in XML.
-        """
+    def _clarity_state_url(self):
+        return 'http://results.enr.clarityelections.com/' + self.state
 
-        pass
+    def _scrape_subjurisdiction_summary_path(self, html):
+        tree = lxml.html.fromstring(html)
+        try:
+            segment = tree.xpath("//meta[@content]")[0].values()[1].split("=")[1].split('/')[1]
+        except:
+            segment = tree.xpath("//script")[0].values()[0].split('/')[1]
+        return '/'+ segment + '/en/summary.html'
+
+    @property
+    def detail_xml_url(self):
+        if self.level == 'state':
+            return None
+        parsed = urlparse.urlsplit(self.url)
+        self._detail_xml_url = self._clarity_state_url() + '/' + '/'.join(parsed.path.split('/')[2:-2]) + '/reports/detailxml.zip'
+        return self._detail_xml_url
