@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from clarity.parser import ElectionResult
+from clarity.parser import JurisdictionResults
 
 TEST_XML = """<?xml version="1.0"?>
 <!--Election result snapshot imported from Tabulation System
@@ -314,7 +314,7 @@ Extracted from
 http://results.enr.clarityelections.com/KY/Greenup/51018/129034/reports/detailxml.zip
 """
 
-class TestElectionResult(unittest.TestCase):
+class TestJurisdictionResults(unittest.TestCase):
     def test_parse(self):
         num_precincts = 32
         num_candidates = 5 
@@ -323,7 +323,7 @@ class TestElectionResult(unittest.TestCase):
         num_expected_results = ((num_candidates + num_pseudo_candidates) *
             num_precincts)
 
-        er = ElectionResult()
+        er = JurisdictionResults()
         er.parse(TEST_XML)
 
         self.assertEqual(er.timestamp, datetime.datetime(2014, 5, 20, 20, 19, 21))

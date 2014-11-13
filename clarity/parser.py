@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from lxml import etree
 
-class ElectionResult(object):
+class JurisdictionResults(object):
     """All results from a jurisdiction's detail XML result files"""
     # TODO: Decide if this name sucks since it actually represents a bunch
     # of results.
