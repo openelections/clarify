@@ -1,4 +1,5 @@
-import urlparse
+import six
+from six.moves.urllib import parse
 
 import requests
 import lxml.html
@@ -46,7 +47,7 @@ class Jurisdiction(object):
             return []
 
     def _parse_url(self):
-        return urlparse.urlsplit(self.url)
+        return parse.urlsplit(self.url)
 
     def _get_state_from_url(self):
         return self.parsed_url.path.split('/')[1]
@@ -58,7 +59,7 @@ class Jurisdiction(object):
             newpath = '/'.join(self.parsed_url.path.split('/')[:-1]) + '/select-county.html'
             parts = (self.parsed_url.scheme, self.parsed_url.netloc, newpath, self.parsed_url.query,
                      self.parsed_url.fragment)
-            return urlparse.urlunsplit(parts)
+            return parse.urlunsplit(parts)
 
     def _scrape_subjurisdiction_paths(self, html):
         tree = lxml.html.fromstring(html)
