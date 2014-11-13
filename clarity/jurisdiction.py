@@ -20,9 +20,11 @@ class Jurisdiction(object):
         """
 
         self.url = url # always a summary.html
+        self.parsed_url = self._parse_url()
         self.state = self._get_state_from_url()
         self.level = level
         self.name = name
+        self.summary_url = self._get_summary_url()
 
     def get_subjurisdictions(self):
         """
@@ -41,15 +43,16 @@ class Jurisdiction(object):
         except requests.exceptions.HTTPError:
             return []
 
+    def _parse_url(self):
+        return urlparse.urlsplit(self.url)
+
     def _get_state_from_url(self):
-        parsed = urlparse.urlsplit(self.url)
-        return parsed.path.split('/')[1]
+        return self.parsed_url.path.split('/')[1]
 
     def _get_subjurisdictions_url(self):
-        parsed = urlparse.urlsplit(self.url)
-        newpath = '/'.join(parsed.path.split('/')[:-1]) + '/select-county.html'
-        parts = (parsed.scheme, parsed.netloc, newpath, parsed.query,
-                 parsed.fragment)
+        newpath = '/'.join(self.parsed_url.path.split('/')[:-1]) + '/select-county.html'
+        parts = (self.parsed_url.scheme, self.parsed_url.netloc, newpath, self.parsed_url.query,
+                 self.parsed_url.fragment)
         return urlparse.urlunsplit(parts)
 
     def _scrape_subjurisdiction_paths(self, html):
@@ -76,10 +79,11 @@ class Jurisdiction(object):
             segment = tree.xpath("//script")[0].values()[0].split('/')[1]
         return '/'+ segment + '/en/summary.html'
 
-    @property
-    def detail_xml_url(self):
-        if self.level == 'state':
-            return None
-        parsed = urlparse.urlsplit(self.url)
-        self._detail_xml_url = self._clarity_state_url() + '/' + '/'.join(parsed.path.split('/')[2:-2]) + '/reports/detailxml.zip'
-        return self._detail_xml_url
+    def report_url(self, fmt):
+        """
+        Returns link to detailed report depending on format. Formats are xls, txt and xml.
+        """
+        return self._clarity_state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
+
+    def _get_summary_url(self):
+        return self._clarity_state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"

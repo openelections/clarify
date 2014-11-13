@@ -48,9 +48,30 @@ class TestJurisdiction(TestCase):
         expected_jurisdiction_count = 0
         self.assertEqual(len(jurisdictions), expected_jurisdiction_count)
 
-    def test_detail_xml_url(self):
+    def test_report_url_xml(self):
         # Construct a Jurisdiction for Appling County, GA 2014 Primary Election
         url = 'http://results.enr.clarityelections.com/GA/Appling/52178/139522/en/summary.html'
         jurisdiction = Jurisdiction(url=url, level='county')
         expected_url = 'http://results.enr.clarityelections.com/GA/Appling/52178/139522/reports/detailxml.zip'
-        self.assertEqual(jurisdiction.detail_xml_url, expected_url)
+        self.assertEqual(jurisdiction.report_url('xml'), expected_url)
+
+    def test_report_url_txt(self):
+        # Construct a Jurisdiction for Kentucky 2010 Primary Election
+        url = 'http://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='county')
+        expected_url = 'http://results.enr.clarityelections.com/KY/15261/30235/reports/detailtxt.zip'
+        self.assertEqual(jurisdiction.report_url('txt'), expected_url)
+
+    def test_report_url_xls(self):
+        # Construct a Jurisdiction for Colorado 2014 General Election
+        url = 'http://results.enr.clarityelections.com/CO/53335/149144/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='county')
+        expected_url = 'http://results.enr.clarityelections.com/CO/53335/149144/reports/detailxls.zip'
+        self.assertEqual(jurisdiction.report_url('xls'), expected_url)
+
+    def test_summary_url(self):
+        # Construct a Jurisdiction for Colorado 2014 General Election
+        url = 'http://results.enr.clarityelections.com/CO/53335/149144/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='state')
+        expected_url = 'http://results.enr.clarityelections.com/CO/53335/149144/reports/summary.zip'
+        self.assertEqual(jurisdiction.summary_url, expected_url)
