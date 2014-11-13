@@ -1,6 +1,7 @@
 import datetime
 from collections import namedtuple
 
+import dateutil.parser
 from lxml import etree
 
 class JurisdictionResults(object):
@@ -31,7 +32,7 @@ class JurisdictionResults(object):
         self._contests = self._parse_contests(tree)
 
     def _parse_timestamp(self, tree):
-        return datetime.datetime.strptime(tree.xpath('/ElectionResult/Timestamp')[0].text, '%m/%d/%Y %H:%M:%S %p %Z')
+        return dateutil.parser.parse(tree.xpath('/ElectionResult/Timestamp')[0].text)
 
     def _parse_election_name(self, tree):
         return tree.xpath('/ElectionResult/ElectionName')[0].text

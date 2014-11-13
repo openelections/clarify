@@ -14,6 +14,7 @@ setup(
         'requests',
         'lxml',
         'cssselect',
+        'python-dateutil',
     ],
     tests_require=[
         'nose',
