@@ -158,7 +158,7 @@ class JurisdictionResults(object):
         return s == "true"
 
 class Precinct(namedtuple('Precinct', ['name', 'total_voters', 'ballots_cast',
-        'percent_reporting'])
+        'percent_reporting'])):
 
     def __str__(self):
         return self.name
@@ -204,4 +204,7 @@ class Choice(namedtuple('Choice', ['contest', 'key', 'text', 'total_votes'])):
         self._results.append(r)
 
 class Result(namedtuple('Result', ['contest', 'vote_type', 'precinct',
-        'votes', 'choice'])
+        'votes', 'choice'])):
+
+    def __init__(self, *args, **kwargs):
+        pass
