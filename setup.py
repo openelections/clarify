@@ -14,6 +14,7 @@ setup(
         'requests',
         'lxml',
         'cssselect',
+        'six',
     ],
     tests_require=[
         'nose',
