@@ -24,7 +24,7 @@ class TestJurisdiction(TestCase):
         jurisdictions = election.get_sub_jurisdictions()
         expected_jurisdictions = 0
         self.assertEqual(len(jurisdictions), expected_jurisdictions)
-    
+
     def test_detail_xml_url(self):
         url = ''
         jurisdiction = Jurisdiction(url=url, level='county')
