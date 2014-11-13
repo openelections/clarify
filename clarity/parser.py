@@ -1,3 +1,4 @@
+import datetime
 from collections import namedtuple
 
 from lxml import etree
@@ -24,34 +25,39 @@ class JurisdictionResults(object):
         self.election_date = self._parse_election_date(tree)
         self.region = self._parse_region(tree)
         self.total_voters = self._parse_total_voters(tree)
-        self._ballots_cast = self._parse_ballots_cast(tree)
+        self.ballots_cast = self._parse_ballots_cast(tree)
+        self.voter_turnout = self._parse_voter_turnout(tree)
 
         self._precincts = self._parse_precincts(tree)
 
     def _parse_timestamp(self, tree):
-        pass
+        return datetime.datetime.strptime(tree.xpath('/ElectionResult/Timestamp')[0].text, '%m/%d/%Y %H:%M:%S %p %Z')
 
     def _parse_election_name(self, tree):
-        pass
+        return tree.xpath('/ElectionResult/ElectionName')[0].text
 
     def _parse_election_date(self, tree):
-        pass
+        dt = datetime.datetime.strptime(tree.xpath('/ElectionResult/ElectionDate')[0].text, '%m/%d/%Y')
+        return datetime.date(dt.year, dt.month, dt.day)
 
     def _parse_region(self, tree):
-        pass
+        return tree.xpath('/ElectionResult/Region')[0].text
 
     def _parse_total_voters(self, tree):
-        pass
+        return int(tree.xpath('/ElectionResult/VoterTurnout')[0].values()[0])
 
     def _parse_ballots_cast(self, tree):
-        pass
+        return int(tree.xpath('/ElectionResult/VoterTurnout')[0].values()[1])
+
+    def _parse_voter_turnout(self, tree):
+        return float(tree.xpath('/ElectionResult/VoterTurnout')[0].values()[2])
 
     def _parse_precincts(self, tree):
         precinct_els = tree.xpath('/ElectionResult/VoterTurnout/Precincts/Precinct')
         for el in precinct_els:
             # TODO: Implement this
             pass
-        
+
     @property
     def precincts(self):
         return self._precincts
