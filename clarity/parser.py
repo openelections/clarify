@@ -29,7 +29,7 @@ class JurisdictionResults(object):
 
         self._precincts = self._parse_precincts(tree)
         self._precinct_lookup = {p.name: p for p in self._precincts}
-        self._contests = self._parse_contests(tree)
+        self._contests = self._parse_contests(tree, self._precinct_lookup)
 
     def _parse_timestamp(self, tree):
         return dateutil.parser.parse(tree.xpath('/ElectionResult/Timestamp')[0].text)
@@ -61,7 +61,8 @@ class JurisdictionResults(object):
               name=el.attrib['name'],
               total_voters=int(el.attrib['totalVoters']),
               ballots_cast=int(el.attrib['ballotsCast']),
-              percent_reporting=float(el.attrib['percent_reporting'])
+              voter_turnout=float(el.attrib['voterTurnout']),
+              percent_reporting=float(el.attrib['percentReporting'])
             ))
         return precincts
 
@@ -82,7 +83,7 @@ class JurisdictionResults(object):
 
     def _parse_contests(self, tree, precinct_lookup):
         contest_els = tree.xpath('/ElectionResult/Contest')
-        return [self._parse_contest(el) for el in contest_els]
+        return [self._parse_contest(el, precinct_lookup) for el in contest_els]
 
     def _parse_contest(self, el, precinct_lookup):
         contest = Contest(
@@ -90,8 +91,8 @@ class JurisdictionResults(object):
            text=el.attrib['text'],
            vote_for=int(el.attrib['voteFor']),
            is_question=self._parse_boolean(el.attrib['isQuestion']),
-           precincts_reporting=int(el.attrib['precincts_reporting']),
-           precincts_reported=int(el.attrib['precincts_reported'])
+           precincts_reporting=int(el.attrib['precinctsReporting']),
+           precincts_reported=int(el.attrib['precinctsReported'])
         )
 
         for r in self._parse_no_choice_results(el, precinct_lookup, contest):
@@ -104,26 +105,30 @@ class JurisdictionResults(object):
 
     def _parse_no_choice_results(self, el, precinct_lookup, contest):
         results = []
-        vote_type_els = el.xpath('/VoteType')
+        vote_type_els = el.xpath('./VoteType')
         for vt_el in vote_type_els:
             vote_type = vt_el.attrib['name']
             results.append(Result(
                 contest=contest,
                 vote_type=vote_type,
-                votes=int(vt_el.attrib['votes'])
+                precinct=None,
+                votes=int(vt_el.attrib['votes']),
+                choice=None
             ))
-            for precinct_el in vt_el.xpath('/Precinct'):
+            for precinct_el in vt_el.xpath('./Precinct'):
                 precinct = precinct_lookup[precinct_el.attrib['name']]
                 results.append(Result(
+                    contest=contest,
                     vote_type=vote_type,
                     precinct=precinct,
-                    votes=int(precinct_el.attrib['votes'])
+                    votes=int(precinct_el.attrib['votes']),
+                    choice=None
                 ))
 
         return results
 
-    def _parse_choices(self, el, precinct_lookup):
-        return [self._parse_choice(c_el, precinct_lookup)
+    def _parse_choices(self, el, precinct_lookup, contest):
+        return [self._parse_choice(c_el, precinct_lookup, contest)
                 for c_el in el.xpath('Choice')]
 
     def _parse_choice(self, el, precinct_lookup, contest):
@@ -133,25 +138,25 @@ class JurisdictionResults(object):
             text=el.attrib['text'],
             total_votes=el.attrib['totalVotes'],
         )
-        vt_el = el.xpath('/VoteType')
-        vote_type = vt_el.attrib['name']
-        choice_results = []
-        choice_results.append(Result(
-          contest=contest,
-          vote_type=vote_type,
-          votes=int(vt_el.attrib['votes']),
-          choice=choice
-        ))
-
-        for precinct_el in vt_el.xpath('/Precinct'):
-            precinct = precinct_lookup[precinct_el.attrib['name']]
-            choice_results.append(Result(
-                contest=contest,
-                vote_type=vote_type,
-                precinct=precinct,
-                votes=int(precinct_el.attrib['votes']),
-                choice=choice
+        for vt_el in el.xpath('./VoteType'):
+            vote_type = vt_el.attrib['name']
+            choice.add_result(Result(
+              contest=contest,
+              vote_type=vote_type,
+              precinct=None,
+              votes=int(vt_el.attrib['votes']),
+              choice=choice
             ))
+
+            for precinct_el in vt_el.xpath('./Precinct'):
+                precinct = precinct_lookup[precinct_el.attrib['name']]
+                choice.add_result(Result(
+                    contest=contest,
+                    vote_type=vote_type,
+                    precinct=precinct,
+                    votes=int(precinct_el.attrib['votes']),
+                    choice=choice
+                ))
 
         return choice
 
@@ -159,7 +164,7 @@ class JurisdictionResults(object):
         return s == "true"
 
 class Precinct(namedtuple('Precinct', ['name', 'total_voters', 'ballots_cast',
-        'percent_reporting'])):
+        'voter_turnout', 'percent_reporting'])):
     def __str__(self):
         return self.name
 

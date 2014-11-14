@@ -316,17 +316,17 @@ http://results.enr.clarityelections.com/KY/Greenup/51018/129034/reports/detailxm
 
 class TestJurisdictionResults(unittest.TestCase):
     def test_parse(self):
-        num_precincts = 32
+        num_precincts = 33
         num_candidates = 5
         # Overvotes and undervotes
         num_pseudo_candidates = 2
-        num_expected_results = ((num_candidates + num_pseudo_candidates) *
-            (num_precincts + 1))
+        num_expected_results = (num_candidates * (num_precincts + 1) +
+                num_pseudo_candidates * (num_precincts + 1))
 
         er = JurisdictionResults()
         er.parse(TEST_XML)
 
-        self.assertEqual(er.timestamp, datetime.datetime(2014, 5, 20, 8, 19, 21))
+        self.assertEqual(er.timestamp, datetime.datetime(2014, 5, 20, 20, 19, 21))
         self.assertEqual(er.election_name, "2014 Primary Election")
         self.assertEqual(er.election_date, datetime.date(2014, 5, 20))
         self.assertEqual(er.region, "Greenup")
@@ -339,6 +339,8 @@ class TestJurisdictionResults(unittest.TestCase):
         self.assertEqual(precinct.total_voters, 0)
         self.assertEqual(precinct.ballots_cast, 171)
         self.assertEqual(precinct.voter_turnout, 0)
-        self.assertEqual(precinct.percentReporting, 4)
+        self.assertEqual(precinct.percent_reporting, 4)
+
+        self.assertEqual(len(er.contests), 1)
 
         self.assertEqual(len(er.results), num_expected_results)
