@@ -50,8 +50,11 @@ class Jurisdiction(object):
     def _parse_url(self):
         """
         The parsed version of the original URL is used by several methods,
-        so we assign it to self.parsed_url on init.
+        so we assign it to self.parsed_url on init. If URL has "/Web01/"
+        segment, that gets stripped out.
         """
+        if 'Web01/' in self.url:
+            self.url = self.url.replace('Web01/','')
         return parse.urlsplit(self.url)
 
     def _get_state_from_url(self):
