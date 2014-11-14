@@ -207,8 +207,4 @@ class Choice(namedtuple('Choice', ['contest', 'key', 'text', 'total_votes'])):
     def add_result(self, r):
         self._results.append(r)
 
-class Result(namedtuple('Result', ['contest', 'vote_type', 'precinct',
-        'votes', 'choice'])):
-
-    def __init__(self, *args, **kwargs):
-        pass
+Result = namedtuple('Result', ['contest', 'vote_type', 'precinct', 'votes', 'choice'])
