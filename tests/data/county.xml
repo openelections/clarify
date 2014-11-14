@@ -1,0 +1,477 @@
+<?xml version="1.0"?>
+<!--Election result snapshot imported from Tabulation System
+-->
+<ElectionResult>
+    <Timestamp>11/13/2014 2:58:41 PM CST</Timestamp>
+    <ElectionName>2014 General Election</ElectionName>
+    <ElectionDate>11/4/2014</ElectionDate>
+    <Region>AR</Region>
+    <ElectionVoterTurnout totalVoters="1690577" ballotsCast="850615" voterTurnout="50.32">
+        <Counties>
+            <County name="Arkansas" totalVoters="10196" ballotsCast="5137" voterTurnout="50.38" precinctsParticipating="30" precinctsReported="30" precinctsReportingPercent="100.00" />
+            <County name="Ashley" totalVoters="11953" ballotsCast="6303" voterTurnout="52.73" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Baxter" totalVoters="28488" ballotsCast="15116" voterTurnout="53.06" precinctsParticipating="43" precinctsReported="43" precinctsReportingPercent="100.00" />
+            <County name="Benton" totalVoters="129175" ballotsCast="63266" voterTurnout="48.98" precinctsParticipating="73" precinctsReported="73" precinctsReportingPercent="100.00" />
+            <County name="Boone" totalVoters="22268" ballotsCast="11331" voterTurnout="50.88" precinctsParticipating="12" precinctsReported="12" precinctsReportingPercent="100.00" />
+            <County name="Bradley" totalVoters="5389" ballotsCast="2923" voterTurnout="54.24" precinctsParticipating="14" precinctsReported="14" precinctsReportingPercent="100.00" />
+            <County name="Calhoun" totalVoters="3523" ballotsCast="1650" voterTurnout="46.84" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Carroll" totalVoters="14887" ballotsCast="8169" voterTurnout="54.87" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Chicot" totalVoters="6627" ballotsCast="3541" voterTurnout="53.43" precinctsParticipating="12" precinctsReported="12" precinctsReportingPercent="100.00" />
+            <County name="Clark" totalVoters="12594" ballotsCast="7003" voterTurnout="55.61" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Clay" totalVoters="8455" ballotsCast="4070" voterTurnout="48.14" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Cleburne" totalVoters="17694" ballotsCast="9958" voterTurnout="56.28" precinctsParticipating="34" precinctsReported="34" precinctsReportingPercent="100.00" />
+            <County name="Cleveland" totalVoters="4884" ballotsCast="2747" voterTurnout="56.24" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Columbia" totalVoters="14168" ballotsCast="8244" voterTurnout="58.19" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Conway" totalVoters="11053" ballotsCast="6403" voterTurnout="57.93" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Craighead" totalVoters="54257" ballotsCast="25379" voterTurnout="46.78" precinctsParticipating="53" precinctsReported="53" precinctsReportingPercent="100.00" />
+            <County name="Crawford" totalVoters="30438" ballotsCast="16337" voterTurnout="53.67" precinctsParticipating="43" precinctsReported="43" precinctsReportingPercent="100.00" />
+            <County name="Crittenden" totalVoters="29560" ballotsCast="10844" voterTurnout="36.68" precinctsParticipating="24" precinctsReported="24" precinctsReportingPercent="100.00" />
+            <County name="Cross" totalVoters="10606" ballotsCast="5328" voterTurnout="50.24" precinctsParticipating="22" precinctsReported="22" precinctsReportingPercent="100.00" />
+            <County name="Dallas" totalVoters="4706" ballotsCast="2393" voterTurnout="50.85" precinctsParticipating="9" precinctsReported="9" precinctsReportingPercent="100.00" />
+            <County name="Desha" totalVoters="7685" ballotsCast="3492" voterTurnout="45.44" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Drew" totalVoters="10442" ballotsCast="5264" voterTurnout="50.41" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Faulkner" totalVoters="69072" ballotsCast="34122" voterTurnout="49.40" precinctsParticipating="52" precinctsReported="52" precinctsReportingPercent="100.00" />
+            <County name="Franklin" totalVoters="10002" ballotsCast="5538" voterTurnout="55.37" precinctsParticipating="39" precinctsReported="39" precinctsReportingPercent="100.00" />
+            <County name="Fulton" totalVoters="7234" ballotsCast="3438" voterTurnout="47.53" precinctsParticipating="13" precinctsReported="13" precinctsReportingPercent="100.00" />
+            <County name="Garland" totalVoters="64331" ballotsCast="30405" voterTurnout="47.26" precinctsParticipating="180" precinctsReported="180" precinctsReportingPercent="100.00" />
+            <County name="Grant" totalVoters="10032" ballotsCast="5379" voterTurnout="53.62" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Greene" totalVoters="20204" ballotsCast="11215" voterTurnout="55.51" precinctsParticipating="38" precinctsReported="38" precinctsReportingPercent="100.00" />
+            <County name="Hempstead" totalVoters="11298" ballotsCast="5372" voterTurnout="47.55" precinctsParticipating="24" precinctsReported="24" precinctsReportingPercent="100.00" />
+            <County name="Hot Spring" totalVoters="19082" ballotsCast="9451" voterTurnout="49.53" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Howard" totalVoters="7092" ballotsCast="3696" voterTurnout="52.12" precinctsParticipating="35" precinctsReported="35" precinctsReportingPercent="100.00" />
+            <County name="Independence" totalVoters="20051" ballotsCast="10079" voterTurnout="50.27" precinctsParticipating="34" precinctsReported="34" precinctsReportingPercent="100.00" />
+            <County name="Izard" totalVoters="7503" ballotsCast="4295" voterTurnout="57.24" precinctsParticipating="48" precinctsReported="48" precinctsReportingPercent="100.00" />
+            <County name="Jackson" totalVoters="10026" ballotsCast="4193" voterTurnout="41.82" precinctsParticipating="14" precinctsReported="14" precinctsReportingPercent="100.00" />
+            <County name="Jefferson" totalVoters="43913" ballotsCast="20291" voterTurnout="46.21" precinctsParticipating="202" precinctsReported="202" precinctsReportingPercent="100.00" />
+            <County name="Johnson" totalVoters="13269" ballotsCast="6612" voterTurnout="49.83" precinctsParticipating="22" precinctsReported="22" precinctsReportingPercent="100.00" />
+            <County name="Lafayette" totalVoters="4070" ballotsCast="2431" voterTurnout="59.73" precinctsParticipating="24" precinctsReported="24" precinctsReportingPercent="100.00" />
+            <County name="Lawrence" totalVoters="8600" ballotsCast="4652" voterTurnout="54.09" precinctsParticipating="28" precinctsReported="28" precinctsReportingPercent="100.00" />
+            <County name="Lee" totalVoters="5184" ballotsCast="2705" voterTurnout="52.18" precinctsParticipating="13" precinctsReported="13" precinctsReportingPercent="100.00" />
+            <County name="Lincoln" totalVoters="6175" ballotsCast="3107" voterTurnout="50.32" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Little River" totalVoters="7156" ballotsCast="4152" voterTurnout="58.02" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Logan" totalVoters="11719" ballotsCast="6534" voterTurnout="55.76" precinctsParticipating="36" precinctsReported="36" precinctsReportingPercent="100.00" />
+            <County name="Lonoke" totalVoters="39642" ballotsCast="19633" voterTurnout="49.53" precinctsParticipating="55" precinctsReported="55" precinctsReportingPercent="100.00" />
+            <County name="Madison" totalVoters="9304" ballotsCast="5206" voterTurnout="55.95" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Marion" totalVoters="9764" ballotsCast="5094" voterTurnout="52.17" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Miller" totalVoters="24384" ballotsCast="11559" voterTurnout="47.40" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Mississippi" totalVoters="21478" ballotsCast="10613" voterTurnout="49.41" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Monroe" totalVoters="4652" ballotsCast="2430" voterTurnout="52.24" precinctsParticipating="15" precinctsReported="15" precinctsReportingPercent="100.00" />
+            <County name="Montgomery" totalVoters="5235" ballotsCast="2950" voterTurnout="56.35" precinctsParticipating="16" precinctsReported="16" precinctsReportingPercent="100.00" />
+            <County name="Nevada" totalVoters="5650" ballotsCast="2791" voterTurnout="49.40" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Newton" totalVoters="5998" ballotsCast="0" voterTurnout="0.00" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Ouachita" totalVoters="16982" ballotsCast="8060" voterTurnout="47.46" precinctsParticipating="23" precinctsReported="23" precinctsReportingPercent="100.00" />
+            <County name="Perry" totalVoters="6284" ballotsCast="3630" voterTurnout="57.77" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Phillips" totalVoters="14262" ballotsCast="5950" voterTurnout="41.72" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Pike" totalVoters="5498" ballotsCast="3132" voterTurnout="56.97" precinctsParticipating="11" precinctsReported="11" precinctsReportingPercent="100.00" />
+            <County name="Poinsett" totalVoters="12606" ballotsCast="6490" voterTurnout="51.48" precinctsParticipating="9" precinctsReported="9" precinctsReportingPercent="100.00" />
+            <County name="Polk" totalVoters="11606" ballotsCast="6420" voterTurnout="55.32" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Pope" totalVoters="32179" ballotsCast="17201" voterTurnout="53.45" precinctsParticipating="55" precinctsReported="55" precinctsReportingPercent="100.00" />
+            <County name="Prairie" totalVoters="4633" ballotsCast="2679" voterTurnout="57.82" precinctsParticipating="22" precinctsReported="22" precinctsReportingPercent="100.00" />
+            <County name="Pulaski" totalVoters="243841" ballotsCast="128162" voterTurnout="52.56" precinctsParticipating="135" precinctsReported="135" precinctsReportingPercent="100.00" />
+            <County name="Randolph" totalVoters="10207" ballotsCast="5132" voterTurnout="50.28" precinctsParticipating="29" precinctsReported="29" precinctsReportingPercent="100.00" />
+            <County name="Saline" totalVoters="69347" ballotsCast="39905" voterTurnout="57.54" precinctsParticipating="42" precinctsReported="42" precinctsReportingPercent="100.00" />
+            <County name="Scott" totalVoters="5496" ballotsCast="3116" voterTurnout="56.70" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Searcy" totalVoters="5484" ballotsCast="3116" voterTurnout="56.82" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Sebastian" totalVoters="73994" ballotsCast="32029" voterTurnout="43.29" precinctsParticipating="120" precinctsReported="120" precinctsReportingPercent="100.00" />
+            <County name="Sevier" totalVoters="6616" ballotsCast="3525" voterTurnout="53.28" precinctsParticipating="16" precinctsReported="16" precinctsReportingPercent="100.00" />
+            <County name="Sharp" totalVoters="11295" ballotsCast="5737" voterTurnout="50.79" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="St Francis" totalVoters="13813" ballotsCast="6135" voterTurnout="44.41" precinctsParticipating="15" precinctsReported="15" precinctsReportingPercent="100.00" />
+            <County name="Stone" totalVoters="7799" ballotsCast="4556" voterTurnout="58.42" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Union" totalVoters="26109" ballotsCast="12637" voterTurnout="48.40" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Van Buren" totalVoters="9592" ballotsCast="5967" voterTurnout="62.21" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Washington" totalVoters="115749" ballotsCast="54754" voterTurnout="47.30" precinctsParticipating="151" precinctsReported="151" precinctsReportingPercent="100.00" />
+            <County name="White" totalVoters="41685" ballotsCast="22001" voterTurnout="52.78" precinctsParticipating="93" precinctsReported="93" precinctsReportingPercent="100.00" />
+            <County name="Woodruff" totalVoters="4386" ballotsCast="2183" voterTurnout="49.77" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Yell" totalVoters="9946" ballotsCast="5257" voterTurnout="52.86" precinctsParticipating="28" precinctsReported="28" precinctsReportingPercent="100.00" />
+        </Counties>
+    </ElectionVoterTurnout>
+    <Contest key="100" text="U.S. Senate" voteFor="1" isQuestion="false" countiesParticipating="75" countiesReported="75" precinctsParticipating="2655" precinctsReported="2655" precinctsReportingPercent="100.00">
+        <ParticipatingCounties>
+            <County name="Arkansas" precinctsParticipating="30" precinctsReported="30" precinctsReportingPercent="100.00" />
+            <County name="Ashley" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Baxter" precinctsParticipating="43" precinctsReported="43" precinctsReportingPercent="100.00" />
+            <County name="Benton" precinctsParticipating="73" precinctsReported="73" precinctsReportingPercent="100.00" />
+            <County name="Boone" precinctsParticipating="12" precinctsReported="12" precinctsReportingPercent="100.00" />
+            <County name="Bradley" precinctsParticipating="14" precinctsReported="14" precinctsReportingPercent="100.00" />
+            <County name="Calhoun" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Carroll" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Chicot" precinctsParticipating="12" precinctsReported="12" precinctsReportingPercent="100.00" />
+            <County name="Clark" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Clay" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Cleburne" precinctsParticipating="34" precinctsReported="34" precinctsReportingPercent="100.00" />
+            <County name="Cleveland" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Columbia" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Conway" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Craighead" precinctsParticipating="53" precinctsReported="53" precinctsReportingPercent="100.00" />
+            <County name="Crawford" precinctsParticipating="43" precinctsReported="43" precinctsReportingPercent="100.00" />
+            <County name="Crittenden" precinctsParticipating="24" precinctsReported="24" precinctsReportingPercent="100.00" />
+            <County name="Cross" precinctsParticipating="22" precinctsReported="22" precinctsReportingPercent="100.00" />
+            <County name="Dallas" precinctsParticipating="9" precinctsReported="9" precinctsReportingPercent="100.00" />
+            <County name="Desha" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Drew" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Faulkner" precinctsParticipating="52" precinctsReported="52" precinctsReportingPercent="100.00" />
+            <County name="Franklin" precinctsParticipating="39" precinctsReported="39" precinctsReportingPercent="100.00" />
+            <County name="Fulton" precinctsParticipating="13" precinctsReported="13" precinctsReportingPercent="100.00" />
+            <County name="Garland" precinctsParticipating="180" precinctsReported="180" precinctsReportingPercent="100.00" />
+            <County name="Grant" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Greene" precinctsParticipating="38" precinctsReported="38" precinctsReportingPercent="100.00" />
+            <County name="Hempstead" precinctsParticipating="24" precinctsReported="24" precinctsReportingPercent="100.00" />
+            <County name="Hot Spring" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Howard" precinctsParticipating="35" precinctsReported="35" precinctsReportingPercent="100.00" />
+            <County name="Independence" precinctsParticipating="34" precinctsReported="34" precinctsReportingPercent="100.00" />
+            <County name="Izard" precinctsParticipating="48" precinctsReported="48" precinctsReportingPercent="100.00" />
+            <County name="Jackson" precinctsParticipating="14" precinctsReported="14" precinctsReportingPercent="100.00" />
+            <County name="Jefferson" precinctsParticipating="202" precinctsReported="202" precinctsReportingPercent="100.00" />
+            <County name="Johnson" precinctsParticipating="22" precinctsReported="22" precinctsReportingPercent="100.00" />
+            <County name="Lafayette" precinctsParticipating="24" precinctsReported="24" precinctsReportingPercent="100.00" />
+            <County name="Lawrence" precinctsParticipating="28" precinctsReported="28" precinctsReportingPercent="100.00" />
+            <County name="Lee" precinctsParticipating="13" precinctsReported="13" precinctsReportingPercent="100.00" />
+            <County name="Lincoln" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Little River" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Logan" precinctsParticipating="36" precinctsReported="36" precinctsReportingPercent="100.00" />
+            <County name="Lonoke" precinctsParticipating="55" precinctsReported="55" precinctsReportingPercent="100.00" />
+            <County name="Madison" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Marion" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Miller" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Mississippi" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Monroe" precinctsParticipating="15" precinctsReported="15" precinctsReportingPercent="100.00" />
+            <County name="Montgomery" precinctsParticipating="16" precinctsReported="16" precinctsReportingPercent="100.00" />
+            <County name="Nevada" precinctsParticipating="18" precinctsReported="18" precinctsReportingPercent="100.00" />
+            <County name="Newton" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Ouachita" precinctsParticipating="23" precinctsReported="23" precinctsReportingPercent="100.00" />
+            <County name="Perry" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Phillips" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Pike" precinctsParticipating="11" precinctsReported="11" precinctsReportingPercent="100.00" />
+            <County name="Poinsett" precinctsParticipating="9" precinctsReported="9" precinctsReportingPercent="100.00" />
+            <County name="Polk" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Pope" precinctsParticipating="55" precinctsReported="55" precinctsReportingPercent="100.00" />
+            <County name="Prairie" precinctsParticipating="22" precinctsReported="22" precinctsReportingPercent="100.00" />
+            <County name="Pulaski" precinctsParticipating="135" precinctsReported="135" precinctsReportingPercent="100.00" />
+            <County name="Randolph" precinctsParticipating="29" precinctsReported="29" precinctsReportingPercent="100.00" />
+            <County name="Saline" precinctsParticipating="42" precinctsReported="42" precinctsReportingPercent="100.00" />
+            <County name="Scott" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="Searcy" precinctsParticipating="17" precinctsReported="17" precinctsReportingPercent="100.00" />
+            <County name="Sebastian" precinctsParticipating="120" precinctsReported="120" precinctsReportingPercent="100.00" />
+            <County name="Sevier" precinctsParticipating="16" precinctsReported="16" precinctsReportingPercent="100.00" />
+            <County name="Sharp" precinctsParticipating="26" precinctsReported="26" precinctsReportingPercent="100.00" />
+            <County name="St Francis" precinctsParticipating="15" precinctsReported="15" precinctsReportingPercent="100.00" />
+            <County name="Stone" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Union" precinctsParticipating="31" precinctsReported="31" precinctsReportingPercent="100.00" />
+            <County name="Van Buren" precinctsParticipating="21" precinctsReported="21" precinctsReportingPercent="100.00" />
+            <County name="Washington" precinctsParticipating="151" precinctsReported="151" precinctsReportingPercent="100.00" />
+            <County name="White" precinctsParticipating="93" precinctsReported="93" precinctsReportingPercent="100.00" />
+            <County name="Woodruff" precinctsParticipating="20" precinctsReported="20" precinctsReportingPercent="100.00" />
+            <County name="Yell" precinctsParticipating="28" precinctsReported="28" precinctsReportingPercent="100.00" />
+        </ParticipatingCounties>
+        <Choice key="001" text="Tom Cotton" party="REP" totalVotes="477734">
+            <VoteType name="Election Day" votes="248263">
+                <County name="Arkansas" votes="1144" />
+                <County name="Ashley" votes="42" />
+                <County name="Baxter" votes="5133" />
+                <County name="Benton" votes="21591" />
+                <County name="Boone" votes="3304" />
+                <County name="Bradley" votes="906" />
+                <County name="Calhoun" votes="638" />
+                <County name="Carroll" votes="3153" />
+                <County name="Chicot" votes="619" />
+                <County name="Clark" votes="1762" />
+                <County name="Clay" votes="1368" />
+                <County name="Cleburne" votes="3921" />
+                <County name="Cleveland" votes="1172" />
+                <County name="Columbia" votes="0" />
+                <County name="Conway" votes="2130" />
+                <County name="Craighead" votes="7025" />
+                <County name="Crawford" votes="7344" />
+                <County name="Crittenden" votes="1663" />
+                <County name="Cross" votes="1336" />
+                <County name="Dallas" votes="645" />
+                <County name="Desha" votes="261" />
+                <County name="Drew" votes="1417" />
+                <County name="Faulkner" votes="8572" />
+                <County name="Franklin" votes="1869" />
+                <County name="Fulton" votes="1227" />
+                <County name="Garland" votes="9041" />
+                <County name="Grant" votes="2168" />
+                <County name="Greene" votes="2944" />
+                <County name="Hempstead" votes="1896" />
+                <County name="Hot Spring" votes="3463" />
+                <County name="Howard" votes="1137" />
+                <County name="Independence" votes="3035" />
+                <County name="Izard" votes="1658" />
+                <County name="Jackson" votes="1143" />
+                <County name="Jefferson" votes="4609" />
+                <County name="Johnson" votes="1432" />
+                <County name="Lafayette" votes="110" />
+                <County name="Lawrence" votes="984" />
+                <County name="Lee" votes="467" />
+                <County name="Lincoln" votes="944" />
+                <County name="Little River" votes="1643" />
+                <County name="Logan" votes="2503" />
+                <County name="Lonoke" votes="6176" />
+                <County name="Madison" votes="2413" />
+                <County name="Marion" votes="1978" />
+                <County name="Miller" votes="4324" />
+                <County name="Mississippi" votes="2509" />
+                <County name="Monroe" votes="748" />
+                <County name="Montgomery" votes="1175" />
+                <County name="Nevada" votes="950" />
+                <County name="Newton" votes="44" />
+                <County name="Ouachita" votes="0" />
+                <County name="Perry" votes="1351" />
+                <County name="Phillips" votes="1132" />
+                <County name="Pike" votes="1272" />
+                <County name="Poinsett" votes="2845" />
+                <County name="Polk" votes="2533" />
+                <County name="Pope" votes="4899" />
+                <County name="Prairie" votes="1109" />
+                <County name="Pulaski" votes="28800" />
+                <County name="Randolph" votes="1357" />
+                <County name="Saline" votes="12062" />
+                <County name="Scott" votes="1333" />
+                <County name="Searcy" votes="1094" />
+                <County name="Sebastian" votes="11910" />
+                <County name="Sevier" votes="1591" />
+                <County name="Sharp" votes="1833" />
+                <County name="St Francis" votes="1374" />
+                <County name="Stone" votes="1282" />
+                <County name="Union" votes="0" />
+                <County name="Van Buren" votes="2089" />
+                <County name="Washington" votes="19647" />
+                <County name="White" votes="9050" />
+                <County name="Woodruff" votes="203" />
+                <County name="Yell" votes="1761" />
+            </VoteType>
+            <VoteType name="Early Vote" votes="200430">
+                <County name="Arkansas" votes="494" />
+                <County name="Ashley" votes="1313" />
+                <County name="Baxter" votes="4616" />
+                <County name="Benton" votes="20178" />
+                <County name="Boone" votes="4145" />
+                <County name="Bradley" votes="522" />
+                <County name="Calhoun" votes="250" />
+                <County name="Carroll" votes="1475" />
+                <County name="Chicot" votes="480" />
+                <County name="Clark" votes="1293" />
+                <County name="Clay" votes="872" />
+                <County name="Cleburne" votes="2587" />
+                <County name="Cleveland" votes="478" />
+                <County name="Columbia" votes="0" />
+                <County name="Conway" votes="1219" />
+                <County name="Craighead" votes="7968" />
+                <County name="Crawford" votes="3681" />
+                <County name="Crittenden" votes="2779" />
+                <County name="Cross" votes="1588" />
+                <County name="Dallas" votes="504" />
+                <County name="Desha" votes="28" />
+                <County name="Drew" votes="28" />
+                <County name="Faulkner" votes="11705" />
+                <County name="Franklin" votes="1420" />
+                <County name="Fulton" votes="750" />
+                <County name="Garland" votes="9113" />
+                <County name="Grant" votes="1299" />
+                <County name="Greene" votes="3881" />
+                <County name="Hempstead" votes="1049" />
+                <County name="Hot Spring" votes="1705" />
+                <County name="Howard" votes="924" />
+                <County name="Independence" votes="3112" />
+                <County name="Izard" votes="935" />
+                <County name="Jackson" votes="943" />
+                <County name="Jefferson" votes="1853" />
+                <County name="Johnson" votes="2133" />
+                <County name="Lafayette" votes="464" />
+                <County name="Lawrence" votes="1576" />
+                <County name="Lee" votes="376" />
+                <County name="Lincoln" votes="558" />
+                <County name="Little River" votes="606" />
+                <County name="Logan" votes="1371" />
+                <County name="Lonoke" votes="7042" />
+                <County name="Madison" votes="659" />
+                <County name="Marion" votes="1350" />
+                <County name="Miller" votes="3155" />
+                <County name="Mississippi" votes="1964" />
+                <County name="Monroe" votes="251" />
+                <County name="Montgomery" votes="597" />
+                <County name="Nevada" votes="409" />
+                <County name="Newton" votes="518" />
+                <County name="Ouachita" votes="0" />
+                <County name="Perry" votes="735" />
+                <County name="Phillips" votes="612" />
+                <County name="Pike" votes="716" />
+                <County name="Poinsett" votes="669" />
+                <County name="Polk" votes="1794" />
+                <County name="Pope" votes="6609" />
+                <County name="Prairie" votes="407" />
+                <County name="Pulaski" votes="22403" />
+                <County name="Randolph" votes="1525" />
+                <County name="Saline" votes="13500" />
+                <County name="Scott" votes="575" />
+                <County name="Searcy" votes="1007" />
+                <County name="Sebastian" votes="8364" />
+                <County name="Sevier" votes="624" />
+                <County name="Sharp" votes="1608" />
+                <County name="St Francis" votes="766" />
+                <County name="Stone" votes="1454" />
+                <County name="Union" votes="0" />
+                <County name="Van Buren" votes="1491" />
+                <County name="Washington" votes="9491" />
+                <County name="White" votes="6008" />
+                <County name="Woodruff" votes="528" />
+                <County name="Yell" votes="1328" />
+            </VoteType>
+            <VoteType name="Absentee" votes="13319">
+                <County name="Arkansas" votes="905" />
+                <County name="Ashley" votes="1912" />
+                <County name="Baxter" votes="201" />
+                <County name="Benton" votes="545" />
+                <County name="Boone" votes="129" />
+                <County name="Bradley" votes="38" />
+                <County name="Calhoun" votes="8" />
+                <County name="Carroll" votes="70" />
+                <County name="Chicot" votes="50" />
+                <County name="Clark" votes="65" />
+                <County name="Clay" votes="13" />
+                <County name="Cleburne" votes="127" />
+                <County name="Cleveland" votes="18" />
+                <County name="Columbia" votes="0" />
+                <County name="Conway" votes="44" />
+                <County name="Craighead" votes="203" />
+                <County name="Crawford" votes="100" />
+                <County name="Crittenden" votes="80" />
+                <County name="Cross" votes="51" />
+                <County name="Dallas" votes="1" />
+                <County name="Desha" votes="922" />
+                <County name="Drew" votes="1230" />
+                <County name="Faulkner" votes="305" />
+                <County name="Franklin" votes="65" />
+                <County name="Fulton" votes="27" />
+                <County name="Garland" votes="0" />
+                <County name="Grant" votes="21" />
+                <County name="Greene" votes="40" />
+                <County name="Hempstead" votes="110" />
+                <County name="Hot Spring" votes="72" />
+                <County name="Howard" votes="21" />
+                <County name="Independence" votes="69" />
+                <County name="Izard" votes="0" />
+                <County name="Jackson" votes="17" />
+                <County name="Jefferson" votes="100" />
+                <County name="Johnson" votes="65" />
+                <County name="Lafayette" votes="793" />
+                <County name="Lawrence" votes="33" />
+                <County name="Lee" votes="28" />
+                <County name="Lincoln" votes="36" />
+                <County name="Little River" votes="45" />
+                <County name="Logan" votes="58" />
+                <County name="Lonoke" votes="108" />
+                <County name="Madison" votes="30" />
+                <County name="Marion" votes="0" />
+                <County name="Miller" votes="95" />
+                <County name="Mississippi" votes="40" />
+                <County name="Monroe" votes="26" />
+                <County name="Montgomery" votes="62" />
+                <County name="Nevada" votes="46" />
+                <County name="Newton" votes="1361" />
+                <County name="Ouachita" votes="0" />
+                <County name="Perry" votes="22" />
+                <County name="Phillips" votes="30" />
+                <County name="Pike" votes="27" />
+                <County name="Poinsett" votes="175" />
+                <County name="Polk" votes="117" />
+                <County name="Pope" votes="100" />
+                <County name="Prairie" votes="19" />
+                <County name="Pulaski" votes="898" />
+                <County name="Randolph" votes="59" />
+                <County name="Saline" votes="192" />
+                <County name="Scott" votes="56" />
+                <County name="Searcy" votes="43" />
+                <County name="Sebastian" votes="299" />
+                <County name="Sevier" votes="28" />
+                <County name="Sharp" votes="93" />
+                <County name="St Francis" votes="58" />
+                <County name="Stone" votes="69" />
+                <County name="Union" votes="0" />
+                <County name="Van Buren" votes="61" />
+                <County name="Washington" votes="295" />
+                <County name="White" votes="232" />
+                <County name="Woodruff" votes="18" />
+                <County name="Yell" votes="43" />
+            </VoteType>
+            <VoteType name="Provisional" votes="111">
+                <County name="Arkansas" votes="47" />
+                <County name="Ashley" votes="0" />
+                <County name="Baxter" votes="0" />
+                <County name="Benton" votes="0" />
+                <County name="Boone" votes="0" />
+                <County name="Bradley" votes="3" />
+                <County name="Calhoun" votes="2" />
+                <County name="Carroll" votes="0" />
+                <County name="Chicot" votes="0" />
+                <County name="Clark" votes="0" />
+                <County name="Clay" votes="0" />
+                <County name="Cleburne" votes="0" />
+                <County name="Cleveland" votes="0" />
+                <County name="Columbia" votes="0" />
+                <County name="Conway" votes="0" />
+                <County name="Craighead" votes="0" />
+                <County name="Crawford" votes="5" />
+                <County name="Crittenden" votes="0" />
+                <County name="Cross" votes="0" />
+                <County name="Dallas" votes="15" />
+                <County name="Desha" votes="0" />
+                <County name="Drew" votes="0" />
+                <County name="Faulkner" votes="0" />
+                <County name="Franklin" votes="0" />
+                <County name="Fulton" votes="1" />
+                <County name="Garland" votes="0" />
+                <County name="Grant" votes="2" />
+                <County name="Greene" votes="0" />
+                <County name="Hempstead" votes="0" />
+                <County name="Hot Spring" votes="0" />
+                <County name="Howard" votes="0" />
+                <County name="Independence" votes="0" />
+                <County name="Izard" votes="0" />
+                <County name="Jackson" votes="0" />
+                <County name="Jefferson" votes="6" />
+                <County name="Johnson" votes="8" />
+                <County name="Lafayette" votes="0" />
+                <County name="Lawrence" votes="0" />
+                <County name="Lee" votes="0" />
+                <County name="Lincoln" votes="0" />
+                <County name="Little River" votes="1" />
+                <County name="Logan" votes="0" />
+                <County name="Lonoke" votes="4" />
+                <County name="Madison" votes="0" />
+                <County name="Marion" votes="0" />
+                <County name="Miller" votes="7" />
+                <County name="Mississippi" votes="10" />
+                <County name="Monroe" votes="0" />
+                <County name="Montgomery" votes="0" />
+                <County name="Nevada" votes="0" />
+                <County name="Newton" votes="0" />
+                <County name="Ouachita" votes="0" />
+                <County name="Perry" votes="0" />
+                <County name="Phillips" votes="0" />
+                <County name="Pike" votes="0" />
+                <County name="Poinsett" votes="0" />
+                <County name="Polk" votes="0" />
+                <County name="Pope" votes="0" />
+                <County name="Prairie" votes="0" />
+                <County name="Pulaski" votes="0" />
+                <County name="Randolph" votes="0" />
+                <County name="Saline" votes="0" />
+                <County name="Scott" votes="0" />
+                <County name="Searcy" votes="0" />
+                <County name="Sebastian" votes="0" />
+                <County name="Sevier" votes="0" />
+                <County name="Sharp" votes="0" />
+                <County name="St Francis" votes="0" />
+                <County name="Stone" votes="0" />
+                <County name="Union" votes="0" />
+                <County name="Van Buren" votes="0" />
+                <County name="Washington" votes="0" />
+                <County name="White" votes="0" />
+                <County name="Woodruff" votes="0" />
+                <County name="Yell" votes="0" />
+          </VoteType>
+      </Choice>
+    </Contest>
+</ElectionResult>
