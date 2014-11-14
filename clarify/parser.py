@@ -5,7 +5,13 @@ import dateutil.parser
 from lxml import etree
 
 class Parser(object):
-    """All results from a jurisdiction's detail XML result files"""
+    """
+    Parser for a jurisdiction's detail XML report files
+    
+    An example for such a file can be found at
+    http://results.enr.clarityelections.com/KY/Adair/15263/27401/reports/detailxml.zip
+
+    """
     def __init__(self):
         self.timestamp = None
         self.election_name = None
@@ -18,6 +24,14 @@ class Parser(object):
         self._contests = []
 
     def parse(self, f):
+        """
+        Parse the report XML file, populating attributes 
+
+        Args:
+            f: String containing filename or file-like object for the XML
+               report file to be parsed.
+
+        """
         tree = etree.parse(f)
         election_voter_turnout = self._parse_election_voter_turnout(tree)
         self.timestamp = self._parse_timestamp(tree)
@@ -33,23 +47,97 @@ class Parser(object):
         self._contests = self._parse_contests(tree, self._result_jurisdiction_lookup)
 
     def _parse_timestamp(self, tree):
+        """
+        Parse timestamp of this results file
+
+        Args:
+            tree: ElementTree object representing the root of the parsed XML
+                document
+
+        Returns:
+            datetime.datetime object representing the results timestamp, from
+            the ``Timestamp`` element in the XML document
+        
+        """
         return dateutil.parser.parse(tree.xpath('/ElectionResult/Timestamp')[0].text)
 
     def _parse_election_name(self, tree):
+        """
+        Parse election name for these results
+
+        Args:
+            tree: ElementTree object representing the root of the parsed XML
+                document
+
+        Returns:
+            String representing the election name, from the ``ElectionName``
+            element in the XML. For example, "2012 Arkansas Primary Election".
+
+        """
         return tree.xpath('/ElectionResult/ElectionName')[0].text
 
     def _parse_election_date(self, tree):
+        """
+        Parse election date for these results
+
+        Args:
+            tree: ElementTree object representing the root of the parsed XML
+                document
+
+        Returns:
+            date object representing the election date, from the
+            ``ElectionDate`` element in the XML.
+
+        """
         dt = datetime.datetime.strptime(tree.xpath('/ElectionResult/ElectionDate')[0].text, '%m/%d/%Y')
         return datetime.date(dt.year, dt.month, dt.day)
 
     def _parse_region(self, tree):
+        """
+        Parse the region for these results
+
+        This will generally be the name of a state or county name.
+
+        Args:
+            tree: ElementTree object representing the root of the parsed XML
+                document
+
+        Returns:
+            String containing the region name for these results, from the 
+            ``Region`` element in the XML.
+        
+        """
         return tree.xpath('/ElectionResult/Region')[0].text
 
     def _parse_election_voter_turnout(self, tree):
+        """
+        Parse the aggregate voter turnout for these results
+
+        Args:
+            tree: ElementTree object representing the root of the parsed XML
+                document
+
+        Returns:
+            List of strings representing the number of total voters, the number
+            of ballots cast, and the percentage of voter turnout.  These
+            should be cast to appropriate types in calling code.
+        
+        """
         els = tree.xpath('/ElectionResult/VoterTurnout') + tree.xpath('/ElectionResult/ElectionVoterTurnout')
         return els[0].values()
 
     def _parse_result_jurisdictions(self, tree):
+        """
+        Parse sub-jurisdictions for these results.
+
+        Args:
+            tree: ElementTree object representing the root of the parsed XML
+                document
+
+        Returns:
+            List of ``ResultJurisdiction`` objects.
+
+        """
         result_jurisdictions = []
         precinct_els = tree.xpath('/ElectionResult/VoterTurnout/Precincts/Precinct')
         for el in precinct_els:
@@ -94,9 +182,27 @@ class Parser(object):
             results.extend(c.results)
         return results
 
-    def _get_attrib(self, el, key, fn=None):
+    def _get_attrib(self, el, attr, fn=None):
+        """
+        Get an attribute for an XML element
+
+        This is used to prevent unneccessary branching or try/except clauses
+        for parsing elements with different sets of attributes depending
+        on the real-world thing it represents. 
+
+        Args:
+            el: ``Element`` object representing an XML element
+            attr: String containing attribute name 
+            fn: Function called on value to cast the attribute value
+                from a string to a different type
+
+        Returns:
+            Value of element attribute, transformed through ``fn``, or
+            None if the attribute does not exist.
+        
+        """
         try:
-            val = el.attrib[key]
+            val = el.attrib[attr]
             if fn is not None:
                 val = fn(val)
             return val
@@ -104,10 +210,30 @@ class Parser(object):
             return None
 
     def _parse_contests(self, tree, result_jurisdiction_lookup):
+        """
+        Parse contests from these results
+
+
+        Args:
+            tree: ElementTree object representing the root of the parsed XML
+                document
+            result_jurisdiction_lookup: Dictionary mapping jursdiction names to
+                ``ResultJurisdiction`` objects
+
+        Returns:
+            List of ``Contest`` objects
+
+        """
         contest_els = tree.xpath('/ElectionResult/Contest')
         return [self._parse_contest(el, result_jurisdiction_lookup) for el in contest_els]
 
     def _parse_contest(self, el, result_jurisdiction_lookup):
+        """
+        Parse a single contest's attributes and results
+
+        # BOOKMARK: Continue documentation here
+
+        """
         contest = Contest(
            key=self._get_attrib(el, 'key'),
            text=self._get_attrib(el, 'text'),
