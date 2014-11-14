@@ -58,6 +58,16 @@ class TestJurisdiction(TestCase):
         expected_jurisdiction_count = 0
         self.assertEqual(len(jurisdictions), expected_jurisdiction_count)
 
+    def test_get_sub_jurisdictions_web01(self):
+        """A jurisdiction with sub-jurisdictions with Web01 in url should return a list"""
+        # Construct a Jurisdiction for Arkansas 2014 General Election
+        url = 'http://results.enr.clarityelections.com/AR/53237/149294/Web01/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='state')
+        jurisdictions = jurisdiction.get_subjurisdictions()
+        # A city has no sub-jurisdictions with results
+        expected_jurisdiction_count = 75
+        self.assertEqual(len(jurisdictions), expected_jurisdiction_count)
+
     def test_report_url_xml(self):
         # Construct a Jurisdiction for Appling County, GA 2014 Primary Election
         url = 'http://results.enr.clarityelections.com/GA/Appling/52178/139522/en/summary.html'
