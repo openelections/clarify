@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from clarity.parser import Parser
+from clarify.parser import Parser
 
 class TestPrecinctParser(unittest.TestCase):
     def test_parse(self):

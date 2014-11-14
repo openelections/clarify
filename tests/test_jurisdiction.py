@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from clarity.jurisdiction import Jurisdiction
+from clarify.jurisdiction import Jurisdiction
 
 class TestJurisdiction(TestCase):
     def test_construct(self):

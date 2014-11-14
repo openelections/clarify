@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='OpenElections Clarity',
+    name='Clarify',
     version='0.1.0',
     author='OpenElections',
     author_email='openelections@gmail.com',

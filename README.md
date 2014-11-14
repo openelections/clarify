@@ -20,7 +20,7 @@ Usage
 
 Election results sites running Clarity software offer detailed election results at the level of the political jurisdiction (for example, a state or county) and, optionally, sub-jurisdictions beneath that (counties and/or precincts). Clarify provides methods for discovering the URLs of structured data files and for parsing the XML versions of those files into Python objects.
 
-
+To see this in action, 
 
 
 
