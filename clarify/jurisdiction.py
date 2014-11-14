@@ -16,11 +16,12 @@ class Jurisdiction(object):
 
     def __init__(self, url, level, name=''):
         """
-        Should we check that url contains "http://results.enr.clarityelections.com/"?
-        Should we check that level is one of ('state','county','city')?
+        To create an instance, pass a Clarity results URL for the top-level
+        political jurisdiction (a state, for example), and the corresponding
+        level in lowercase ("state" or "county").
         """
 
-        self.url = url # always a summary.html
+        self.url = url
         self.parsed_url = self._parse_url()
         self.state = self._get_state_from_url()
         self.level = level
