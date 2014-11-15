@@ -242,11 +242,10 @@ class Parser(object):
         """
         Parse contests from these results
 
-
         Args:
             tree: ElementTree object representing the root of the parsed XML
                 document
-            result_jurisdiction_lookup: Dictionary mapping jursdiction names to
+            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
                 ``ResultJurisdiction`` objects
 
         Returns:
@@ -256,38 +255,60 @@ class Parser(object):
         contest_els = tree.xpath('/ElectionResult/Contest')
         return [self._parse_contest(el, result_jurisdiction_lookup) for el in contest_els]
 
-    def _parse_contest(self, el, result_jurisdiction_lookup):
+    def _parse_contest(self, contest_el, result_jurisdiction_lookup):
         """
-        Parse a single contest's attributes and results
+        Parse a single ``Contest`` element's attributes and results
 
-        # BOOKMARK: Continue documentation here
+        Args:
+            contest_el: Element object for a ``Contest`` contest_element in the parsed XML.
+            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
+                ``ResultJurisdiction`` objects
+
+        Returns:
+            A ``Contest`` object with attributes parsed from the XML element.
 
         """
         contest = Contest(
-           key=self._get_attrib(el, 'key'),
-           text=self._get_attrib(el, 'text'),
-           vote_for=self._get_attrib(el, 'voteFor', int),
-           is_question=self._get_attrib(el, 'isQuestion', self._parse_boolean),
-           precincts_reporting=self._get_attrib(el,'precinctsReporting', int),
-           precincts_reported=self._get_attrib(el, 'precinctsReported', int),
-           precincts_participating=self._get_attrib(el, 'precinctsParticipating', int),
-           counties_reported=self._get_attrib(el, 'countiesReported', int),
-           counties_participating=self._get_attrib(el, 'countiesParticipating', int)
+           key=self._get_attrib(contest_el, 'key'),
+           text=self._get_attrib(contest_el, 'text'),
+           vote_for=self._get_attrib(contest_el, 'voteFor', int),
+           is_question=self._get_attrib(contest_el, 'isQuestion', self._parse_boolean),
+           precincts_reporting=self._get_attrib(contest_el,'precinctsReporting', int),
+           precincts_reported=self._get_attrib(contest_el, 'precinctsReported', int),
+           precincts_participating=self._get_attrib(contest_el, 'precinctsParticipating', int),
+           counties_reported=self._get_attrib(contest_el, 'countiesReported', int),
+           counties_participating=self._get_attrib(contest_el, 'countiesParticipating', int)
         )
 
-        for r in self._parse_no_choice_results(el, result_jurisdiction_lookup, contest):
+        for r in self._parse_no_choice_results(contest_el, result_jurisdiction_lookup, contest):
             contest.add_result(r)
 
-        for c in self._parse_choices(el, result_jurisdiction_lookup, contest):
+        for c in self._parse_choices(contest_el, contest, result_jurisdiction_lookup):
             contest.add_choice(c)
 
         return contest
 
-    def _parse_no_choice_results(self, el, result_jurisdiction_lookup, contest):
+    def _parse_no_choice_results(self, contest_el, result_jurisdiction_lookup, contest):
+        """
+        Parse results not associated with a Choice.
+
+        These tend to represent overvotes and undervotes.
+
+        Args:
+            contest_el: Element object for a single ``Contest`` element in the XML
+                document.
+            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
+                ``ResultJurisdiction`` objects
+
+        Returns:
+            A list of ``Result`` objects
+
+        """
         results = []
-        vote_type_els = el.xpath('./VoteType')
+        vote_type_els = contest_el.xpath('./VoteType')
         for vt_el in vote_type_els:
             vote_type = vt_el.attrib['name']
+            # Add one result for the jurisdiction
             results.append(Result(
                 contest=contest,
                 vote_type=vote_type,
@@ -309,18 +330,44 @@ class Parser(object):
 
         return results
 
-    def _parse_choices(self, el, result_jurisdiction_lookup, contest):
-        return [self._parse_choice(c_el, result_jurisdiction_lookup, contest)
-                for c_el in el.xpath('Choice')]
+    def _parse_choices(self, contest_el, contest, result_jurisdiction_lookup):
+        """
+        Parse ``Choice`` elements for a ``Contest`` element.
 
-    def _parse_choice(self, el, result_jurisdiction_lookup, contest):
+        Args:
+            contest_el: Element object for a ``Contest`` contest_element in the parsed XML
+            contest: ``Contest`` object corresponding to ``Contest`` element
+            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
+                ``ResultJurisdiction`` objects
+
+        Returns:
+            A list of ``Choice`` elements
+
+        """
+        return [self._parse_choice(c_el, contest, result_jurisdiction_lookup)
+                for c_el in contest_el.xpath('Choice')]
+
+    def _parse_choice(self, contest_el, contest, result_jurisdiction_lookup):
+        """
+        Parse a single ``Choice`` element
+
+        Args:
+            contest_el: Element object for a ``Contest`` contest_element in the parsed XML
+            contest: ``Contest`` object corresponding to ``Contest`` element
+            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
+                ``ResultJurisdiction`` objects
+
+        Returns:
+            A ``Choice`` element
+
+        """
         choice = Choice(
             contest=contest,
-            key=el.attrib['key'],
-            text=el.attrib['text'],
-            total_votes=el.attrib['totalVotes'],
+            key=contest_el.attrib['key'],
+            text=contest_el.attrib['text'],
+            total_votes=contest_el.attrib['totalVotes'],
         )
-        for vt_el in el.xpath('./VoteType'):
+        for vt_el in contest_el.xpath('./VoteType'):
             vote_type = vt_el.attrib['name']
             choice.add_result(Result(
               contest=contest,
@@ -342,25 +389,65 @@ class Parser(object):
 
         return choice
 
-    def _parse_boolean(self, s):
+    @classmethod
+    def _parse_boolean(cls, s):
+        """
+        Convert a string representing a boolean value to a boolo
+
+        Args:
+            s: A string
+
+        Returns:
+            True if s equals "true", otherwise False
+
+        >>> Parser._parse_boolean("true")
+        True
+        >>> Parser._parse_boolean("false")
+        False
+        >>> Parser._parse_boolean("baz")
+        False
+
+        """
         return s == "true"
 
 
 class ResultAggregatorMixin(object):
+    """
+    Mixin class for classes that have related results
+    """
     def _init_results(self):
+        """Initialize the list that holds results"""
         self._results = []
 
     @property
     def results(self):
+        """Return the list of associated Result objects"""
         return self._results
 
     def add_result(self, result):
+        """
+        Associate a ``Result`` object with this object
+        """
         self._results.append(result)
 
 
-class ResultJurisdiction(ResultAggregatorMixin, namedtuple('ResultJurisdiction', ['name', 'total_voters', 'ballots_cast',
-        'voter_turnout', 'percent_reporting', 'precincts_participating', 'precincts_reported',
-        'precincts_reporting_percent', 'level'])):
+RESULT_FIELDS = [
+    'name',
+    'total_voters',
+    'ballots_cast',
+    'voter_turnout',
+    'percent_reporting',
+    'precincts_participating',
+    'precincts_reported',
+    'precincts_reporting_percent',
+    'level',
+]
+
+
+class ResultJurisdiction(ResultAggregatorMixin, namedtuple('ResultJurisdiction', RESULT_FIELDS)):
+    """
+    A jurisdiction such as a county or precinct that has associated results
+    """
     def __init__(self, *args, **kwargs):
         super(ResultJurisdiction, self).__init__(*args, **kwargs)
         self._init_results()
@@ -369,27 +456,61 @@ class ResultJurisdiction(ResultAggregatorMixin, namedtuple('ResultJurisdiction',
         return self.name
 
 
-class Contest(ResultAggregatorMixin, namedtuple('Contest', ['key', 'text', 'vote_for', 'is_question',
-        'precincts_reporting', 'precincts_participating', 'precincts_reported',
-        'counties_participating', 'counties_reported'])):
+CONTEST_FIELDS = [
+    'key',
+    'text',
+    'vote_for',
+    'is_question',
+    'precincts_reporting',
+    'precincts_participating',
+    'precincts_reported',
+    'counties_participating',
+    'counties_reported',
+]
+
+
+class Contest(ResultAggregatorMixin, namedtuple('Contest', CONTEST_FIELDS)):
+    """
+    A contest in an election
+
+    A contest can represent an office, but also something like a judicial
+    retention question, or a referendum.
+
+    """
     def __init__(self, *args, **kwargs):
         super(Contest, self).__init__(*args, **kwargs)
-        self._choices = []
         self._init_results()
+        self._choices = []
 
     def __str__(self):
         return self.text
 
     @property
     def choices(self):
+        """``Choice`` objects associated with this contest"""
         return self._choices
 
     def add_choice(self, c):
+        """Associate a ``Choice`` object with this contest"""
         self._choices.append(c)
         self._results.extend(c.results)
 
 
-class Choice(ResultAggregatorMixin, namedtuple('Choice', ['contest', 'key', 'text', 'total_votes'])):
+CHOICE_FIELDS = [
+    'contest',
+    'key',
+    'text',
+    'total_votes'
+]
+
+
+class Choice(ResultAggregatorMixin, namedtuple('Choice', CHOICE_FIELDS)):
+    """
+    A choice in an electoral contest
+
+    This usually represents a candidate
+
+    """
     def __init__(self, *args, **kwargs):
         super(Choice, self).__init__(*args, **kwargs)
         self._init_results()
@@ -398,7 +519,17 @@ class Choice(ResultAggregatorMixin, namedtuple('Choice', ['contest', 'key', 'tex
         return self.text
 
 
-class Result(namedtuple('Result', ['contest', 'vote_type', 'jurisdiction','votes', 'choice'])):
+RESULT_FIELDS = [
+    'contest',
+    'vote_type',
+    'jurisdiction',
+    'votes',
+    'choice'
+]
+
+
+class Result(namedtuple('Result', RESULT_FIELDS)):
+    """Votes received for a choice in a contest"""
     def __init__(self, *args, **kwargs):
         super(Result, self).__init__(*args, **kwargs)
         if self.jurisdiction is not None:
