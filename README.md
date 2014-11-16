@@ -45,7 +45,27 @@ The `Jurisdiction` object also provides access to any sub-jurisdiction details, 
 
 *Parser*
 
-Clarify's `Parser` class accepts a file or file-like object representing the unzipped election results file in XML format and parses it into Python objects.
+Clarify's `Parser` class accepts a file or file-like object representing the unzipped election results file in XML format and parses it into Python objects containing details about specific elections (which are called contests in the schema) and results. Clarify's parser accepts a file or file-like object, which means that the user needs to handle the downloading and un-zipping portion of the workflow:
+
+```
+>>> p = clarify.Parser()
+>>> p.parse("path/to/detail.xml")
+>>> p.election_name
+'2012 General Election'
+>>> p.region
+'Arkansas'
+>>> p.contests
+[Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), Contest(key='0104', text='U.S. Congress District 1', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None)...]
+```
+
+`Parser` instances have convenience methods to list all contests, result jurisdictions and results. `Parser` objects provide access to both summary and detailed data about contests, including the vote 'choices' which can represent candidates or Yes/No types of questions. A sample result showing Election Day votes for Barack Obama in the 2012 presidential election in the LaGrue precinct in Arkansas County, Arkansas:
+
+```
+>>> p.contests[0].results[450]
+Result(contest=Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), vote_type='Election Day', jurisdiction=ResultJurisdiction(name='LaGrue', total_voters=531, ballots_cast=381, voter_turnout=71.75, percent_reporting=4.0, precincts_participating=None, precincts_reported=None, precincts_reporting_percent=None, level='precinct'), votes=32, choice=Choice(contest=Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), key='004', text='Barack Obama / Joe Biden', total_votes='2455'))
+```
+
+A single `Result` object includes summary level information about the `ResultJurisdiction` (the precinct here), the contest and the choice for the jurisdiction containing the result (in this case, Arkansas County). Clarify's object models attempt to match the original XML schema as closely as possible.
 
 Running tests
 -------------
@@ -55,3 +75,13 @@ python setup.py test
 ```
 
 Right now, the tests take about a minute to run, mostly because of the large number of http requests involved in the process. Speeding up that portion of the code is a goal.
+
+Issues
+------
+
+To report an bug or request a feature, please [create a new issue](https://github.com/openelections/clarify/issues) describing the situation, providing as much detail as possible. Bear in mind that we are using Clarify to load election results data as part of OpenElections and thus supporting states that use it likely will be the highest priority. We welcome contributions: feel free to fork the code and submit pull requests.
+
+License
+-------
+
+Clarify is released under the MIT License.
