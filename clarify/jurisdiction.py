@@ -91,6 +91,12 @@ class Jurisdiction(object):
         Returns the full URL for a county results page.
         """
         url = self._clarity_state_url() + "/".join(path.split('/')[:3])
+        # Make sure path ends with '/'
+        # While the URL without the trailing forward slash will ultimately
+        # resolve to the same place, it causes a redirect which means an
+        # extra request.
+        if not url.endswith('/'):
+            url = url + '/'
         r = requests.get(url)
         r.raise_for_status()
         redirect_path = self._scrape_subjurisdiction_summary_path(r.text)
