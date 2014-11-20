@@ -156,8 +156,6 @@ Running tests
 python setup.py test
 ```
 
-Right now, the tests take about a minute to run, mostly because of the large number of http requests involved in the process. Speeding up that portion of the code is a goal.
-
 Issues
 ------
 

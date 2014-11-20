@@ -19,6 +19,7 @@ setup(
     ],
     tests_require=[
         'nose',
+        'responses',
     ],
     test_suite='nose.collector',
 )

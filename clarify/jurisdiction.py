@@ -1,4 +1,3 @@
-import six
 from six.moves.urllib import parse
 
 import requests
@@ -108,7 +107,8 @@ class Jurisdiction(object):
         """
         return 'http://results.enr.clarityelections.com/' + self.state
 
-    def _scrape_subjurisdiction_summary_path(self, html):
+    @classmethod
+    def _scrape_subjurisdiction_summary_path(cls, html):
         """
         Checks county page for redirect path segment and returns it.
         There are two types of pages: one with segment in meta tag
