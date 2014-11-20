@@ -1,6 +1,5 @@
-=====================
 Clarify
-=====================
+=======
 
 A Python library to discover and parse results for jurisdictions that use election results reporting systems from [SOE Software](http://www.soesoftware.com/product/clarity-election-night-reporting/), a Florida-based company that offers its products under the "Clarity" name. Web sites using Clarity are recognizable by URLs that begin with "http://results.enr.clarityelections.com" and have zip files containing structured data in XML, CSV and XLS format.
 
@@ -22,7 +21,7 @@ Usage
 
 Election results sites running Clarity software offer detailed election results at the level of the political jurisdiction (for example, a state or county) and, optionally, sub-jurisdictions beneath that (counties and/or precincts). Clarify provides methods for discovering the URLs of structured data files and for parsing the XML versions of those files into Python objects.
 
-*Jurisdiction*
+### Jurisdiction
 
 Clarify's `Jurisdiction` class provides details about the jurisdiction represented by a Clarity URL and the data available from that jurisdiction. To create an instance, pass in a Clarity results URL and the level of the jurisdiction ('state', 'county', or 'city'). The object then provides access to the detailed XML results for that jurisdiction:
 
@@ -43,29 +42,112 @@ The `Jurisdiction` object also provides access to any sub-jurisdiction details, 
 'http://results.enr.clarityelections.com/KY/Adair/15263/27401/reports/detailxml.zip'
 ```
 
-*Parser*
+### Parser
 
-Clarify's `Parser` class accepts a file or file-like object representing the unzipped election results file in XML format and parses it into Python objects containing details about specific elections (which are called contests in the schema) and results. Clarify's parser accepts a file or file-like object, which means that the user needs to handle the downloading and un-zipping portion of the workflow:
+Clarify's `Parser` class accepts a file or file-like object representing the unzipped election results file in XML format and parses it into Python objects containing details about specific elections (which are called contests in the schema) and results.  The parser only handles the parsing of the XML into objects which make the election data easy to access.  the user needs to handle the downloading and un-zipping portion of the workflow.
+
+Create a new parser object and parser a results XML file:
 
 ```
 >>> p = clarify.Parser()
 >>> p.parse("path/to/detail.xml")
+```
+
+Once the ``parse()`` method has been called, the `Parser` object has properties that provide information about the election and jurisdiction of the results file:
+
+```
 >>> p.election_name
 '2012 General Election'
 >>> p.region
 'Arkansas'
+```
+
+The parser object also has properties that provide lists of all contests, result jurisdictions and results.
+
+A list of all contests:
+
+
+```
 >>> p.contests
 [Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), Contest(key='0104', text='U.S. Congress District 1', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None)...]
 ```
 
-`Parser` instances have convenience methods to list all contests, result jurisdictions and results. `Parser` objects provide access to both summary and detailed data about contests, including the vote 'choices' which can represent candidates or Yes/No types of questions. A sample result showing Election Day votes for Barack Obama in the 2012 presidential election in the LaGrue precinct in Arkansas County, Arkansas:
+A list of all sub-jurisdictions that have results:
 
 ```
->>> p.contests[0].results[450]
+>>> p.result_jurisdictions
+[ResultJurisdiction(name='Gillett Ward 1', total_voters=121, ballots_cast=74, voter_turnout=61.16, percent_reporting=4.0, precincts_participating=None, precincts_reported=None, precincts_reporting_percent=None, level='precinct'), ResultJurisdiction(name='Gillett Ward 2', total_voters=139, ballots_cast=111, voter_turnout=79.86, percent_reporting=4.0, precincts_participating=None, precincts_reported=None, precincts_reporting_percent=None, level='precinct'),...]
+```
+
+A list of all results, from all contests, from all sub-jurisdictions.  This is useful if you want to transform all the results into another format:
+
+```
+>>> p.results[0:3]
+[Result(contest=Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), vote_type='overVotes', jurisdiction=None, votes=0, choice=None), Result(contest=Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), vote_type='overVotes', jurisdiction=ResultJurisdiction(name='Gillett Ward 1', total_voters=121, ballots_cast=74, voter_turnout=61.16, percent_reporting=4.0, precincts_participating=None, precincts_reported=None, precincts_reporting_percent=None, level='precinct'), votes=0, choice=None), Result(contest=Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), vote_type='overVotes', jurisdiction=ResultJurisdiction(name='Gillett Ward 2', total_voters=139, ballots_cast=111, voter_turnout=79.86, percent_reporting=4.0, precincts_participating=None, precincts_reported=None, precincts_reporting_percent=None, level='precinct'), votes=0, choice=None)]
+```
+
+`Parser` objects also have convenience methods for retrieving specific contests (`get_contest()`) and jurisdictions (`get_result_jurisdiction()`).
+
+Get a `Contest` object for the presidential contest:
+
+```
+>>> contest = p.get_contest("U.S. President and Vice President")
+>>> contest
+Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None)
+```
+
+`Contest` objects provide access to both summary and detailed data about contests, including the vote 'choices' which can represent candidates or Yes/No types of questions.
+
+```
+>>> for c in contest.choices:
+...     print(c.text)
+...
+Gary Johnson / James P. Gray
+Jill Stein / Cheri Honkala
+Mitt Romney / Paul Ryan
+Barack Obama / Joe Biden
+Peta Lindsay / Yari Osorio
+```
+
+`Contest` objects also provide access to all the ``Result`` objects for the contest. A single `Result` object includes summary level information about the `ResultJurisdiction` (the precinct here), the contest and the choice. Clarify's object models attempt to match the original XML schema as closely as possible.
+
+Get a single result for the contest:
+
+```
+>>> result = contest.results[450]
+>>> result
 Result(contest=Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), vote_type='Election Day', jurisdiction=ResultJurisdiction(name='LaGrue', total_voters=531, ballots_cast=381, voter_turnout=71.75, percent_reporting=4.0, precincts_participating=None, precincts_reported=None, precincts_reporting_percent=None, level='precinct'), votes=32, choice=Choice(contest=Contest(key='0103', text='U.S. President and Vice President', vote_for=1, is_question=False, precincts_reporting=30, precincts_participating=None, precincts_reported=30, counties_participating=None, counties_reported=None), key='004', text='Barack Obama / Joe Biden', total_votes='2455'))
 ```
 
-A single `Result` object includes summary level information about the `ResultJurisdiction` (the precinct here), the contest and the choice for the jurisdiction containing the result (in this case, Arkansas County). Clarify's object models attempt to match the original XML schema as closely as possible.
+This result shows election day votes for Barack Obama in the 2012 presidential election in the LaGrue precinct in Arkansas County, Arkansas.  These pieces of information are available as properties of the `Result` object.
+
+Get the candidate name for the result:
+
+```
+>>> result.choice.text
+'Barack Obama / Joe Biden'
+```
+
+Get the type of votes for this result:
+
+```
+>>> result.vote_type
+'Election Day'
+```
+
+Get the name of the jurisdiction of this result:
+
+```
+>>> result.jurisdiction.name
+'LaGrue'
+```
+
+Get the number of votes:
+
+```
+>>> result.votes
+32
+```
 
 Running tests
 -------------
