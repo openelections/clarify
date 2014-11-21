@@ -1,6 +1,9 @@
+import concurrent.futures
+
 from six.moves.urllib import parse
 
 import requests
+from requests_futures.sessions import FuturesSession
 import lxml.html
 from lxml.cssselect import CSSSelector
 
@@ -40,9 +43,21 @@ class Jurisdiction(object):
         try:
             r = requests.get(subjurisdictions_url)
             r.raise_for_status()
-            results = [(self._clarity_subjurisdiction_url(path), subjurisdiction) for path, subjurisdiction
-                    in self._scrape_subjurisdiction_paths(r.text)]
-            return [Jurisdiction(url, 'county', name) for url, name in results]
+
+            # Use a maximum of 10 workers.  Should we parameterize this?
+            session = FuturesSession(max_workers=10)
+            future_to_name = {}
+            for url, name in self._scrape_subjurisdiction_paths(r.text):
+                future = self._subjurisdiction_url_future(session, url)
+                future_to_name[future] = name
+
+            jurisdictions = []
+            for future in concurrent.futures.as_completed(future_to_name):
+                url = self._subjurisdiction_url_from_future(future)
+                name = future_to_name[future]
+                jurisdictions.append(Jurisdiction(url, 'county', name))
+
+            return jurisdictions
         except requests.exceptions.HTTPError:
             return []
 
@@ -85,27 +100,28 @@ class Jurisdiction(object):
         results = sel(tree)
         return [(match.get('value'), match.get('id')) for match in results]
 
-    def _clarity_subjurisdiction_url(self, path):
-        """
-        Returns the full URL for a county results page.
-        """
-        url = self._clarity_state_url() + "/".join(path.split('/')[:3])
+    def _subjurisdiction_url_future(self, session, path):
+        url = self._state_url() + "/".join(path.split('/')[:3])
         # Make sure path ends with '/'
         # While the URL without the trailing forward slash will ultimately
         # resolve to the same place, it causes a redirect which means an
         # extra request.
         if not url.endswith('/'):
             url = url + '/'
-        r = requests.get(url)
-        r.raise_for_status()
-        redirect_path = self._scrape_subjurisdiction_summary_path(r.text)
+        future = session.get(url)
+        return future
+
+    def _subjurisdiction_url_from_future(self, future):
+        res = future.result()
+        url = res.url
+        redirect_path = self._scrape_subjurisdiction_summary_path(res.text)
         # We need to strip the trailing '/' from the URL before adding
         # the additional path
         return url.strip('/') + redirect_path
 
-    def _clarity_state_url(self):
+    def _state_url(self):
         """
-        Returns base URL used by _clarity_subjurisdiction_url.
+        Returns base URL used by _subjurisdiction_url.
         """
         return 'http://results.enr.clarityelections.com/' + self.state
 
@@ -127,10 +143,10 @@ class Jurisdiction(object):
         """
         Returns link to detailed report depending on format. Formats are xls, txt and xml.
         """
-        return self._clarity_state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
+        return self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
 
     def _get_summary_url(self):
         """
         Returns the summary report URL for a jurisdiction.
         """
-        return self._clarity_state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"
+        return self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"

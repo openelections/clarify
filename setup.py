@@ -16,6 +16,7 @@ setup(
         'cssselect',
         'six',
         'python-dateutil',
+        'requests-futures',
     ],
     tests_require=[
         'nose',
