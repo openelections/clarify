@@ -99,7 +99,9 @@ class Jurisdiction(object):
         r = requests.get(url)
         r.raise_for_status()
         redirect_path = self._scrape_subjurisdiction_summary_path(r.text)
-        return url + redirect_path
+        # We need to strip the trailing '/' from the URL before adding
+        # the additional path
+        return url.strip('/') + redirect_path
 
     def _clarity_state_url(self):
         """

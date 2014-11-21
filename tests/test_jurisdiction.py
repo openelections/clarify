@@ -135,11 +135,12 @@ COUNTIES_AR = [
 # Seem to start at 129035 and increment by 1
 COUNTY_IDS_PAIRS = {i:c for i, c in enumerate(COUNTIES_AR, start=129035)}
 
-COUNTY_URL_RE = re.compile(r'http://results.enr.clarityelections.com/(?P<state>[A-Z]{2})/(?P<county>[A-Za-z\.]+)/(?P<page_id>\d+)/')
+COUNTY_REDIRECT_URL_RE = re.compile(r'http://results.enr.clarityelections.com/(?P<state>[A-Z]{2})/(?P<county>[A-Za-z\.]+)/(?P<page_id>\d+)/')
 
+COUNTY_URL_RE = re.compile(r'http://results.enr.clarityelections.com/(?P<state>[A-Z]{2})/(?P<county>[A-Za-z\.]+)/(?P<page_id>\d+)/(?P<page_id_2>\d+)/')
 
 def mock_county_response_callback(req):
-    m = COUNTY_URL_RE.match(req.url)
+    m = COUNTY_REDIRECT_URL_RE.match(req.url)
     assert m is not None
     resp_body = mock_subjurisdiction_redirect_page_script(m.group('page_id'))
     return (200, {}, resp_body)
@@ -179,7 +180,7 @@ class TestJurisdiction(TestCase):
 
         # Mock responses to URLs like
         # http://results.enr.clarityelections.com/KY/Adair/50974/
-        responses.add_callback(responses.GET, COUNTY_URL_RE,
+        responses.add_callback(responses.GET, COUNTY_REDIRECT_URL_RE,
             callback=mock_county_response_callback,
             content_type='text/html')
 
@@ -193,6 +194,8 @@ class TestJurisdiction(TestCase):
             self.assertEqual(jurisdiction.level, 'county')
             # The sub-jurisdictions should have a url attribute set
             self.assertIsNotNone(jurisdiction.url)
+            # And it matches the expected pattern
+            self.assertIsNotNone(COUNTY_URL_RE.match(jurisdiction.url))
 
     def test_scrape_subjurisdiction_summary_path(self):
         # Test HTML that uses JavaScript to redirect to the subjurisdiction
