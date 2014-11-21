@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<title>KY - Election Results</title><script type="text/javascript">
+try {document.execCommand("BackgroundImageCache", false, true);} catch(err) {}
+</script> 
+
+<script type="text/javascript">
+<!-- 
+var gomez={
+gs: new Date().getTime(),
+acctId:'5154D9',
+pgId:'KY:ENRStateSelectCounty',
+grpId:'50972' 
+}; 
+//--> 
+</script> 
+
+<link href="../css/main.css" rel="stylesheet" type="text/css" media="screen" />
+<!--[if IE]><link href="../css/all-ie.css" rel="stylesheet" type="text/css"  /><![endif]-->
+<link href="../css/skin1.css"  rel="stylesheet" type="text/css" media="screen" />
+<link href="../css/ky.css"  rel="stylesheet" type="text/css" media="screen" />
+<link href="../css/print.css"  rel="stylesheet" type="text/css" media="print" />
+<!--[if IE]><script type="text/javascript" src="../js/excanvas-compressed.js"></script><![endif]-->
+<script type="text/JavaScript" src="../js/common-compressed.js"></script>
+<script type="text/JavaScript" src="../js/gomez.js"></script>
+
+<script type="text/JavaScript">
+function a (precinct) 
+{
+   var precinct = decodeURIComponent(precinct);
+   FixId(precinct);
+   var rprecinct = precinct.replace("*","\'");
+   if( rprecinct != '' ) {
+      if( document.getElementById(rprecinct) != null ) {
+          var loc;
+          if( isIE == 1 )
+             loc = getStatePath() + document.getElementById(rprecinct).value;
+          else
+             loc = getStatePath() + document.getElementById(rprecinct).attributes['value'].value;
+          window.open (loc,rprecinct.replace(" ","_").replace(".", ""),"resizable=1,scrollbars=1,toolbar=1,location=1");
+      } else {
+          alert(rprecinct + ' is not participating in this election.'); 
+      }
+   }
+}
+</script>
+</head>
+<body onload="doInit();loadEvents();">
+<div id="skin-header-state">
+<div id="skin-header-banner-left"><img src="../images/ky/State_Banner_Left.jpg"></div><div id="skin-header-banner-right"><img src="../images/ky/State_Banner_Right.jpg"></div></div>
+<a name="top" id="top"></a>
+<div id="wrapper">
+<div id="tabs-state">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="tabLOffEnd-state">&nbsp;</td>
+<td class="tabTxtOff-state"><a href="javascript:NavTo('summary.html');">Statewide Results</a></td>
+<td class="tabOffOn-state">&nbsp;</td>
+<td class="tabTxtOn-state"><a href="javascript:NavTo('select-county.html');">Results by County</a></td>
+<td class="tabROnEnd-state">&nbsp;</td>
+<td class="tabBarOn-state">&nbsp;</td>
+<td class="tabBarOn-state" align="right">
+<div id="language">
+<table border="0" cellspacing="0" cellpadding="0" align="right">
+<tr>
+</tr>
+</table>
+</div><!-- #language --></td>
+<td class="tabBarOnEnd-state">&nbsp;</td>	
+</tr>
+</table>
+</div><!-- #tabs-state-->
+<div id="content-wrapper">
+<div id="header">
+<table border="0" cellspacing="0" cellpadding="0" width="100%" class="right-cap">
+<tr>
+<td><h1>2014 Primary Election</h1></td><td rowspan="2" valign="top">
+<div class="dataL">
+<table border="0" cellspacing="2" cellpadding="2" align="center">
+<tr>
+<td><label>Registered Voters:</label></td>
+<td>&nbsp;3,105,349</td>
+</tr>
+<tr>
+<td><label>Ballots Cast:</label></td>
+<td>&nbsp;840,724</td>
+</tr>
+<tr>
+<td><label>Voter Turnout:</label></td>
+<td>&nbsp;27.07 %</td>
+</tr>
+</table>
+
+</div>
+</td>
+<td rowspan="2" valign="top">
+<div class="dataR">
+<table border="0" cellspacing="0" cellpadding="0" class="data2" align="right">
+<tr>
+<td><label>Counties Partially Reported:</label></td><td>&nbsp;0 of 120</td></tr>
+<tr>
+<td><label>Counties Completely Reported:</label></td><td class="alignRight">&nbsp;120 of 120</td></tr>
+<tr>
+<td><label>Counties Percent Reported:</label></td><td class="alignRight">&nbsp;100.00 %</td></tr>
+</table>
+</div>
+</td>
+</tr>
+<tr>
+<td valign="top"><h2><span id="wlu"><label>Last updated</label>&nbsp;6/2/2014 1:33:17 PM EDT</span></h2></td></tr>
+</table>
+</div>
+
+<div id="note"><center><font size="2" color="red">UNOFFICIAL RESULTS</font></center></div>
+<div id="canvas_legend">
+<table align="center"><tr>
+<td><img src="../images/icon-white.gif" alt="Counties Not Participating" title="Counties Not Participating" width="17" height="17" border="0" /></td><td>Counties Not Participating</td><td><img src="../images/icon-reported.gif" alt="Counties Participating" title="Counties Participating" width="17" height="17" border="0" /></td><td>Counties Participating</td><td><img src="../images/icon_canvassed.gif" alt="County Certified Results" title="County Certified Results" width="17" height="17" border="0" /></td><td>County Certified Results</td></tr></table>
+</div><!-- #legend -->
+
+<div id="map" class="alignCenter">
+<img src="../images/spacer.gif" width="1" height="380" style="float:left;"/><div id="loading" style="position:relative;padding-top:5px;height=32;"/><img src="../images/icon_loading.gif" width="32" height="32"/>&nbsp;Loading Map ...</div><canvas id="jsmap" width="800" height="348"></canvas><div id="ToolTip"></div></div>
+<table align="center" border="0" cellspacing="4" cellpadding="4">
+<tr>
+<td width="33%"><ul>
+<li><a id="Adair" value="/Adair/50974/index.html" href="javascript:a('Adair');">Adair</a></li>
+<li><a id="Allen" value="/Allen/50975/index.html" href="javascript:a('Allen');">Allen</a></li>
+<li><a id="Anderson" value="/Anderson/50976/index.html" href="javascript:a('Anderson');">Anderson</a></li>
+<li><a id="Ballard" value="/Ballard/50977/index.html" href="javascript:a('Ballard');">Ballard</a></li>
+<li><a id="Barren" value="/Barren/50978/index.html" href="javascript:a('Barren');">Barren</a></li>
+<li><a id="Bath" value="/Bath/50979/index.html" href="javascript:a('Bath');">Bath</a></li>
+<li><a id="Bell" value="/Bell/50980/index.html" href="javascript:a('Bell');">Bell</a></li>
+<li><a id="Boone" value="/Boone/50981/index.html" href="javascript:a('Boone');">Boone</a></li>
+<li><a id="Bourbon" value="/Bourbon/50982/index.html" href="javascript:a('Bourbon');">Bourbon</a></li>
+<li><a id="Boyd" value="/Boyd/50983/index.html" href="javascript:a('Boyd');">Boyd</a></li>
+<li><a id="Boyle" value="/Boyle/50984/index.html" href="javascript:a('Boyle');">Boyle</a></li>
+<li><a id="Bracken" value="/Bracken/50985/index.html" href="javascript:a('Bracken');">Bracken</a></li>
+<li><a id="Breathitt" value="/Breathitt/50986/index.html" href="javascript:a('Breathitt');">Breathitt</a></li>
+<li><a id="Breckinridge" value="/Breckinridge/50987/index.html" href="javascript:a('Breckinridge');">Breckinridge</a></li>
+<li><a id="Bullitt" value="/Bullitt/50988/index.html" href="javascript:a('Bullitt');">Bullitt</a></li>
+<li><a id="Butler" value="/Butler/50989/index.html" href="javascript:a('Butler');">Butler</a></li>
+<li><a id="Caldwell" value="/Caldwell/50990/index.html" href="javascript:a('Caldwell');">Caldwell</a></li>
+<li><a id="Calloway" value="/Calloway/50991/index.html" href="javascript:a('Calloway');">Calloway</a></li>
+<li><a id="Campbell" value="/Campbell/50992/index.html" href="javascript:a('Campbell');">Campbell</a></li>
+<li><a id="Carlisle" value="/Carlisle/50993/index.html" href="javascript:a('Carlisle');">Carlisle</a></li>
+<li><a id="Carroll" value="/Carroll/50994/index.html" href="javascript:a('Carroll');">Carroll</a></li>
+<li><a id="Carter" value="/Carter/50995/index.html" href="javascript:a('Carter');">Carter</a></li>
+<li><a id="Casey" value="/Casey/50996/index.html" href="javascript:a('Casey');">Casey</a></li>
+<li><a id="Christian" value="/Christian/50997/index.html" href="javascript:a('Christian');">Christian</a></li>
+<li><a id="Clark" value="/Clark/50998/index.html" href="javascript:a('Clark');">Clark</a></li>
+<li><a id="Clay" value="/Clay/50999/index.html" href="javascript:a('Clay');">Clay</a></li>
+<li><a id="Clinton" value="/Clinton/51000/index.html" href="javascript:a('Clinton');">Clinton</a></li>
+<li><a id="Crittenden" value="/Crittenden/51001/index.html" href="javascript:a('Crittenden');">Crittenden</a></li>
+<li><a id="Cumberland" value="/Cumberland/51002/index.html" href="javascript:a('Cumberland');">Cumberland</a></li>
+<li><a id="Daviess" value="/Daviess/51003/index.html" href="javascript:a('Daviess');">Daviess</a></li>
+<li><a id="Edmonson" value="/Edmonson/51004/index.html" href="javascript:a('Edmonson');">Edmonson</a></li>
+<li><a id="Elliott" value="/Elliott/51005/index.html" href="javascript:a('Elliott');">Elliott</a></li>
+<li><a id="Estill" value="/Estill/51006/index.html" href="javascript:a('Estill');">Estill</a></li>
+<li><a id="Fayette" value="/Fayette/51007/index.html" href="javascript:a('Fayette');">Fayette</a></li>
+<li><a id="Fleming" value="/Fleming/51008/index.html" href="javascript:a('Fleming');">Fleming</a></li>
+<li><a id="Floyd" value="/Floyd/51009/index.html" href="javascript:a('Floyd');">Floyd</a></li>
+<li><a id="Franklin" value="/Franklin/51010/index.html" href="javascript:a('Franklin');">Franklin</a></li>
+<li><a id="Fulton" value="/Fulton/51011/index.html" href="javascript:a('Fulton');">Fulton</a></li>
+<li><a id="Gallatin" value="/Gallatin/51012/index.html" href="javascript:a('Gallatin');">Gallatin</a></li>
+<li><a id="Garrard" value="/Garrard/51013/index.html" href="javascript:a('Garrard');">Garrard</a></li>
+</ul></td>
+<td width="33%"><ul>
+<li><a id="Grant" value="/Grant/51014/index.html" href="javascript:a('Grant');">Grant</a></li>
+<li><a id="Graves" value="/Graves/51015/index.html" href="javascript:a('Graves');">Graves</a></li>
+<li><a id="Grayson" value="/Grayson/51016/index.html" href="javascript:a('Grayson');">Grayson</a></li>
+<li><a id="Green" value="/Green/51017/index.html" href="javascript:a('Green');">Green</a></li>
+<li><a id="Greenup" value="/Greenup/51018/index.html" href="javascript:a('Greenup');">Greenup</a></li>
+<li><a id="Hancock" value="/Hancock/51019/index.html" href="javascript:a('Hancock');">Hancock</a></li>
+<li><a id="Hardin" value="/Hardin/51020/index.html" href="javascript:a('Hardin');">Hardin</a></li>
+<li><a id="Harlan" value="/Harlan/51021/index.html" href="javascript:a('Harlan');">Harlan</a></li>
+<li><a id="Harrison" value="/Harrison/51022/index.html" href="javascript:a('Harrison');">Harrison</a></li>
+<li><a id="Hart" value="/Hart/51023/index.html" href="javascript:a('Hart');">Hart</a></li>
+<li><a id="Henderson" value="/Henderson/51024/index.html" href="javascript:a('Henderson');">Henderson</a></li>
+<li><a id="Henry" value="/Henry/51025/index.html" href="javascript:a('Henry');">Henry</a></li>
+<li><a id="Hickman" value="/Hickman/51026/index.html" href="javascript:a('Hickman');">Hickman</a></li>
+<li><a id="Hopkins" value="/Hopkins/51027/index.html" href="javascript:a('Hopkins');">Hopkins</a></li>
+<li><a id="Jackson" value="/Jackson/51028/index.html" href="javascript:a('Jackson');">Jackson</a></li>
+<li><a id="Jefferson" value="/Jefferson/51029/index.html" href="javascript:a('Jefferson');">Jefferson</a></li>
+<li><a id="Jessamine" value="/Jessamine/51030/index.html" href="javascript:a('Jessamine');">Jessamine</a></li>
+<li><a id="Johnson" value="/Johnson/51031/index.html" href="javascript:a('Johnson');">Johnson</a></li>
+<li><a id="Kenton" value="/Kenton/51032/index.html" href="javascript:a('Kenton');">Kenton</a></li>
+<li><a id="Knott" value="/Knott/51033/index.html" href="javascript:a('Knott');">Knott</a></li>
+<li><a id="Knox" value="/Knox/51034/index.html" href="javascript:a('Knox');">Knox</a></li>
+<li><a id="Larue" value="/Larue/51035/index.html" href="javascript:a('Larue');">Larue</a></li>
+<li><a id="Laurel" value="/Laurel/51036/index.html" href="javascript:a('Laurel');">Laurel</a></li>
+<li><a id="Lawrence" value="/Lawrence/51037/index.html" href="javascript:a('Lawrence');">Lawrence</a></li>
+<li><a id="Lee" value="/Lee/51038/index.html" href="javascript:a('Lee');">Lee</a></li>
+<li><a id="Leslie" value="/Leslie/51039/index.html" href="javascript:a('Leslie');">Leslie</a></li>
+<li><a id="Letcher" value="/Letcher/51040/index.html" href="javascript:a('Letcher');">Letcher</a></li>
+<li><a id="Lewis" value="/Lewis/51041/index.html" href="javascript:a('Lewis');">Lewis</a></li>
+<li><a id="Lincoln" value="/Lincoln/51042/index.html" href="javascript:a('Lincoln');">Lincoln</a></li>
+<li><a id="Livingston" value="/Livingston/51043/index.html" href="javascript:a('Livingston');">Livingston</a></li>
+<li><a id="Logan" value="/Logan/51044/index.html" href="javascript:a('Logan');">Logan</a></li>
+<li><a id="Lyon" value="/Lyon/51045/index.html" href="javascript:a('Lyon');">Lyon</a></li>
+<li><a id="Madison" value="/Madison/51046/index.html" href="javascript:a('Madison');">Madison</a></li>
+<li><a id="Magoffin" value="/Magoffin/51047/index.html" href="javascript:a('Magoffin');">Magoffin</a></li>
+<li><a id="Marion" value="/Marion/51048/index.html" href="javascript:a('Marion');">Marion</a></li>
+<li><a id="Marshall" value="/Marshall/51049/index.html" href="javascript:a('Marshall');">Marshall</a></li>
+<li><a id="Martin" value="/Martin/51050/index.html" href="javascript:a('Martin');">Martin</a></li>
+<li><a id="Mason" value="/Mason/51051/index.html" href="javascript:a('Mason');">Mason</a></li>
+<li><a id="McCracken" value="/McCracken/51052/index.html" href="javascript:a('McCracken');">McCracken</a></li>
+<li><a id="McCreary" value="/McCreary/51053/index.html" href="javascript:a('McCreary');">McCreary</a></li>
+</ul></td>
+<td width="33%"><ul>
+<li><a id="McLean" value="/McLean/51054/index.html" href="javascript:a('McLean');">McLean</a></li>
+<li><a id="Meade" value="/Meade/51055/index.html" href="javascript:a('Meade');">Meade</a></li>
+<li><a id="Menifee" value="/Menifee/51056/index.html" href="javascript:a('Menifee');">Menifee</a></li>
+<li><a id="Mercer" value="/Mercer/51057/index.html" href="javascript:a('Mercer');">Mercer</a></li>
+<li><a id="Metcalfe" value="/Metcalfe/51058/index.html" href="javascript:a('Metcalfe');">Metcalfe</a></li>
+<li><a id="Monroe" value="/Monroe/51059/index.html" href="javascript:a('Monroe');">Monroe</a></li>
+<li><a id="Montgomery" value="/Montgomery/51060/index.html" href="javascript:a('Montgomery');">Montgomery</a></li>
+<li><a id="Morgan" value="/Morgan/51061/index.html" href="javascript:a('Morgan');">Morgan</a></li>
+<li><a id="Muhlenberg" value="/Muhlenberg/51062/index.html" href="javascript:a('Muhlenberg');">Muhlenberg</a></li>
+<li><a id="Nelson" value="/Nelson/51063/index.html" href="javascript:a('Nelson');">Nelson</a></li>
+<li><a id="Nicholas" value="/Nicholas/51064/index.html" href="javascript:a('Nicholas');">Nicholas</a></li>
+<li><a id="Ohio" value="/Ohio/51065/index.html" href="javascript:a('Ohio');">Ohio</a></li>
+<li><a id="Oldham" value="/Oldham/51066/index.html" href="javascript:a('Oldham');">Oldham</a></li>
+<li><a id="Owen" value="/Owen/51067/index.html" href="javascript:a('Owen');">Owen</a></li>
+<li><a id="Owsley" value="/Owsley/51068/index.html" href="javascript:a('Owsley');">Owsley</a></li>
+<li><a id="Pendleton" value="/Pendleton/51069/index.html" href="javascript:a('Pendleton');">Pendleton</a></li>
+<li><a id="Perry" value="/Perry/51070/index.html" href="javascript:a('Perry');">Perry</a></li>
+<li><a id="Pike" value="/Pike/51071/index.html" href="javascript:a('Pike');">Pike</a></li>
+<li><a id="Powell" value="/Powell/51072/index.html" href="javascript:a('Powell');">Powell</a></li>
+<li><a id="Pulaski" value="/Pulaski/51073/index.html" href="javascript:a('Pulaski');">Pulaski</a></li>
+<li><a id="Robertson" value="/Robertson/51074/index.html" href="javascript:a('Robertson');">Robertson</a></li>
+<li><a id="Rockcastle" value="/Rockcastle/51075/index.html" href="javascript:a('Rockcastle');">Rockcastle</a></li>
+<li><a id="Rowan" value="/Rowan/51076/index.html" href="javascript:a('Rowan');">Rowan</a></li>
+<li><a id="Russell" value="/Russell/51077/index.html" href="javascript:a('Russell');">Russell</a></li>
+<li><a id="Scott" value="/Scott/51078/index.html" href="javascript:a('Scott');">Scott</a></li>
+<li><a id="Shelby" value="/Shelby/51079/index.html" href="javascript:a('Shelby');">Shelby</a></li>
+<li><a id="Simpson" value="/Simpson/51080/index.html" href="javascript:a('Simpson');">Simpson</a></li>
+<li><a id="Spencer" value="/Spencer/51081/index.html" href="javascript:a('Spencer');">Spencer</a></li>
+<li><a id="Taylor" value="/Taylor/51082/index.html" href="javascript:a('Taylor');">Taylor</a></li>
+<li><a id="Todd" value="/Todd/51083/index.html" href="javascript:a('Todd');">Todd</a></li>
+<li><a id="Trigg" value="/Trigg/51084/index.html" href="javascript:a('Trigg');">Trigg</a></li>
+<li><a id="Trimble" value="/Trimble/51085/index.html" href="javascript:a('Trimble');">Trimble</a></li>
+<li><a id="Union" value="/Union/51086/index.html" href="javascript:a('Union');">Union</a></li>
+<li><a id="Warren" value="/Warren/51087/index.html" href="javascript:a('Warren');">Warren</a></li>
+<li><a id="Washington" value="/Washington/51088/index.html" href="javascript:a('Washington');">Washington</a></li>
+<li><a id="Wayne" value="/Wayne/51089/index.html" href="javascript:a('Wayne');">Wayne</a></li>
+<li><a id="Webster" value="/Webster/51090/index.html" href="javascript:a('Webster');">Webster</a></li>
+<li><a id="Whitley" value="/Whitley/51091/index.html" href="javascript:a('Whitley');">Whitley</a></li>
+<li><a id="Wolfe" value="/Wolfe/51092/index.html" href="javascript:a('Wolfe');">Wolfe</a></li>
+<li><a id="Woodford" value="/Woodford/51093/index.html" href="javascript:a('Woodford');">Woodford</a></li>
+</ul></td>
+</tr>
+</table>
+</div><!-- #content-wrapper-->
+<div id="content-footer">
+<div id="content-footerL"></div>
+<div id="content-footerR"></div>
+</div>
+<div id="footer-links"><a href="javascript:NavTo('summary.html');">Summary</a> | <a href="javascript:NavTo('pr.html');">Counties Reporting</a> | <a href="javascript:NavTo('vt.html');">Voter Turnout</a> | <a href="javascript:NavTo('reports.html');">Reports</a> | <a href="JavaScript:window.print();">Print This Page</a> | <a href="#top">Top of Page</a></div>
+</div><!-- #wrapper -->
+<script type="text/javascript">
+var jsonFile = "../json/status.json,../json/poly1.json";
+LoadJsonList(jsonFile,'PickCountyMap()');
+</script>
+<center><div id="copyright" style="font-size:x-small;">Powered by - <a href="http://www.soesoftware.com">SOE Software</a></div></center>
+
+
+<script type="text/javascript">
+var googleAnalyticsID = 'UA-3425620-16';
+var googleAnalyticsIdGlobal = 'UA-3425620-3';
+GoogleAnalytics.trackPage(googleAnalyticsID, googleAnalyticsIdGlobal);
+</script>
+
+</body>
+</html>
