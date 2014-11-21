@@ -444,13 +444,15 @@ RESULT_FIELDS = [
 ]
 
 
-class ResultJurisdiction(ResultAggregatorMixin, namedtuple('ResultJurisdiction', RESULT_FIELDS)):
+class ResultJurisdiction(ResultAggregatorMixin,
+        namedtuple('ResultJurisdictionBase', RESULT_FIELDS)):
     """
     A jurisdiction such as a county or precinct that has associated results
     """
-    def __init__(self, *args, **kwargs):
-        super(ResultJurisdiction, self).__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        self = super(ResultJurisdiction, cls).__new__(cls, *args, **kwargs)
         self._init_results()
+        return self
 
     def __str__(self):
         return self.name
@@ -469,7 +471,7 @@ CONTEST_FIELDS = [
 ]
 
 
-class Contest(ResultAggregatorMixin, namedtuple('Contest', CONTEST_FIELDS)):
+class Contest(ResultAggregatorMixin, namedtuple('ContestBase', CONTEST_FIELDS)):
     """
     A contest in an election
 
@@ -477,10 +479,11 @@ class Contest(ResultAggregatorMixin, namedtuple('Contest', CONTEST_FIELDS)):
     retention question, or a referendum.
 
     """
-    def __init__(self, *args, **kwargs):
-        super(Contest, self).__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        self = super(Contest, cls).__new__(cls, *args, **kwargs)
         self._init_results()
         self._choices = []
+        return self
 
     def __str__(self):
         return self.text
@@ -504,16 +507,17 @@ CHOICE_FIELDS = [
 ]
 
 
-class Choice(ResultAggregatorMixin, namedtuple('Choice', CHOICE_FIELDS)):
+class Choice(ResultAggregatorMixin, namedtuple('ChoiceBase', CHOICE_FIELDS)):
     """
     A choice in an electoral contest
 
     This usually represents a candidate
 
     """
-    def __init__(self, *args, **kwargs):
-        super(Choice, self).__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        self = super(Choice, cls).__new__(cls, *args, **kwargs)
         self._init_results()
+        return self
 
     def __str__(self):
         return self.text
@@ -528,11 +532,12 @@ RESULT_FIELDS = [
 ]
 
 
-class Result(namedtuple('Result', RESULT_FIELDS)):
+class Result(namedtuple('ResultBase', RESULT_FIELDS)):
     """Votes received for a choice in a contest"""
-    def __init__(self, *args, **kwargs):
-        super(Result, self).__init__(*args, **kwargs)
+    def __new__(cls, *args, **kwargs):
+        self = super(Result, cls).__new__(cls, *args, **kwargs)
         if self.jurisdiction is not None:
             # When a result is created for a Jurisdiction, add it to the
             # Jurisdiction's list of results
             self.jurisdiction.add_result(self)
+        return self
