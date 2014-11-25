@@ -10,7 +10,7 @@ Clarify has been tested under Python 2.7.X and 3.4.1.
 Installation
 -------------
 
-Until Clarify is published on PyPy, install from the GitHub repository:
+Clarify can be installed using pip:
 
 ```
 pip install clarify
