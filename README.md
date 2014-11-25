@@ -13,7 +13,7 @@ Installation
 Until Clarify is published on PyPy, install from the GitHub repository:
 
 ```
-pip install -e git://github.com/openelections/clarify.git#egg=clarify
+pip install clarify
 ```
 
 Usage
