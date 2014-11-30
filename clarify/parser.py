@@ -1,5 +1,6 @@
-import datetime
 from collections import namedtuple
+import datetime
+import re
 
 import dateutil.parser
 from lxml import etree
@@ -45,7 +46,7 @@ class Parser(object):
 
         self._result_jurisdictions = self._parse_result_jurisdictions(tree)
         self._result_jurisdiction_lookup = {j.name: j for j in self._result_jurisdictions}
-        self._contests = self._parse_contests(tree, self._result_jurisdiction_lookup)
+        self._contests = self._parse_contests(tree)
         self._contest_lookup = {c.text: c for c in self._contests}
 
     def _parse_timestamp(self, tree):
@@ -128,6 +129,29 @@ class Parser(object):
         els = tree.xpath('/ElectionResult/VoterTurnout') + tree.xpath('/ElectionResult/ElectionVoterTurnout')
         return els[0].values()
 
+    @classmethod
+    def _underscore_to_camel(cls, s):
+        """Convert a string separated by underscores to camelcase"""
+        matches = re.findall(r'(_.)', s)
+        converted = s
+        for m in matches:
+            converted = converted.replace(m, m.upper().lstrip('_'))
+        return converted
+
+    @classmethod
+    def _parse_result_jurisdiction(cls, el):
+        kwargs = {
+            'level': el.tag.lower()
+        }
+        for f in RESULT_JURISDICTION_FIELDS:
+            if f == 'level':
+                continue
+            attr_name = cls._underscore_to_camel(f)
+            converter = RESULT_JURISDICTION_FIELD_CONVERTERS.get(f)
+            kwargs[f] = cls._get_attrib(el, attr_name, converter)
+
+        return ResultJurisdiction(**kwargs)
+
     def _parse_result_jurisdictions(self, tree):
         """
         Parse sub-jurisdictions for these results.
@@ -142,31 +166,9 @@ class Parser(object):
         """
         result_jurisdictions = []
         precinct_els = tree.xpath('/ElectionResult/VoterTurnout/Precincts/Precinct')
-        for el in precinct_els:
-            result_jurisdictions.append(ResultJurisdiction(
-              name=el.attrib['name'],
-              total_voters=int(el.attrib['totalVoters']),
-              ballots_cast=int(el.attrib['ballotsCast']),
-              voter_turnout=float(el.attrib['voterTurnout']),
-              percent_reporting=float(el.attrib['percentReporting']),
-              precincts_participating=None,
-              precincts_reported=None,
-              precincts_reporting_percent=None,
-              level='precinct'
-            ))
         county_els = tree.xpath('/ElectionResult/ElectionVoterTurnout/Counties/County')
-        for el in county_els:
-            result_jurisdictions.append(ResultJurisdiction(
-              name=el.attrib['name'],
-              total_voters=int(el.attrib['totalVoters']),
-              ballots_cast=int(el.attrib['ballotsCast']),
-              voter_turnout=float(el.attrib['voterTurnout']),
-              percent_reporting=None,
-              precincts_participating=float(el.attrib['precinctsParticipating']),
-              precincts_reported=float(el.attrib['precinctsReported']),
-              precincts_reporting_percent=float(el.attrib['precinctsReportingPercent']),
-              level='county'
-            ))
+        for el in precinct_els + county_els:
+            result_jurisdictions.append(self._parse_result_jurisdiction(el))
         return result_jurisdictions
 
     @property
@@ -208,10 +210,33 @@ class Parser(object):
             ``ResultJurisdiction`` object whose ``name`` attribute matches
             ``name``.
 
+        Raises:
+            ``KeyError`` if a matching jurisdiction is not found.
+
         """
         return self._result_jurisdiction_lookup[name]
 
-    def _get_attrib(self, el, attr, fn=None):
+    def _get_or_create_result_jurisdiction(self, el):
+        try:
+            return self.get_result_jurisdiction(el.attrib['name'])
+        except KeyError:
+            # We don't yet know about this jurisdiction.  In some rare
+            # cases, there is a mismatch between jurisdictions in the
+            # ``VoterTurnout`` element and the ``VoteType`` elements.
+            jurisdiction = self._parse_result_jurisdiction(el)
+            self.add_result_jurisdiction(jurisdiction)
+            return jurisdiction
+
+    def add_result_jurisdiction(self, jurisdiction):
+        """
+        Add a ResultJurisdiction object to the parser's list of known
+        Jurisdictions.
+        """
+        self._result_jurisdictions.append(jurisdiction)
+        self._result_jurisdiction_lookup[jurisdiction.name] = jurisdiction
+
+    @classmethod
+    def _get_attrib(cls, el, attr, fn=None):
         """
         Get an attribute for an XML element
 
@@ -238,31 +263,30 @@ class Parser(object):
         except KeyError:
             return None
 
-    def _parse_contests(self, tree, result_jurisdiction_lookup):
+    def _parse_contests(self, tree):
         """
         Parse contests from these results
 
         Args:
             tree: ElementTree object representing the root of the parsed XML
                 document
-            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
-                ``ResultJurisdiction`` objects
 
         Returns:
             List of ``Contest`` objects
 
+        If a new jurisdiction is found when parsing the contests, it will be
+        added to the instance's list of result jurisdictions.
+
         """
         contest_els = tree.xpath('/ElectionResult/Contest')
-        return [self._parse_contest(el, result_jurisdiction_lookup) for el in contest_els]
+        return [self._parse_contest(el) for el in contest_els]
 
-    def _parse_contest(self, contest_el, result_jurisdiction_lookup):
+    def _parse_contest(self, contest_el):
         """
         Parse a single ``Contest`` element's attributes and results
 
         Args:
             contest_el: Element object for a ``Contest`` contest_element in the parsed XML.
-            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
-                ``ResultJurisdiction`` objects
 
         Returns:
             A ``Contest`` object with attributes parsed from the XML element.
@@ -280,15 +304,15 @@ class Parser(object):
            counties_participating=self._get_attrib(contest_el, 'countiesParticipating', int)
         )
 
-        for r in self._parse_no_choice_results(contest_el, result_jurisdiction_lookup, contest):
+        for r in self._parse_no_choice_results(contest_el, contest):
             contest.add_result(r)
 
-        for c in self._parse_choices(contest_el, contest, result_jurisdiction_lookup):
+        for c in self._parse_choices(contest_el, contest):
             contest.add_choice(c)
 
         return contest
 
-    def _parse_no_choice_results(self, contest_el, result_jurisdiction_lookup, contest):
+    def _parse_no_choice_results(self, contest_el, contest):
         """
         Parse results not associated with a Choice.
 
@@ -297,8 +321,6 @@ class Parser(object):
         Args:
             contest_el: Element object for a single ``Contest`` element in the XML
                 document.
-            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
-                ``ResultJurisdiction`` objects
 
         Returns:
             A list of ``Result`` objects
@@ -319,45 +341,39 @@ class Parser(object):
             # The subjurisdiction elements are either ``Precinct`` for county or
             # city files or ``County`` for state files
             for subjurisdiction_el in vt_el.xpath('./Precinct') + vt_el.xpath('./County'):
-                if subjurisdiction_el.attrib['name'] in result_jurisdiction_lookup:
-                    subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
-
-                    results.append(Result(
-                        contest=contest,
-                        vote_type=vote_type,
-                        jurisdiction=subjurisdiction,
-                        votes=int(subjurisdiction_el.attrib['votes']),
-                        choice=None
-                    ))
+                subjurisdiction = self._get_or_create_result_jurisdiction(subjurisdiction_el)
+                results.append(Result(
+                    contest=contest,
+                    vote_type=vote_type,
+                    jurisdiction=subjurisdiction,
+                    votes=int(subjurisdiction_el.attrib['votes']),
+                    choice=None
+                ))
 
         return results
 
-    def _parse_choices(self, contest_el, contest, result_jurisdiction_lookup):
+    def _parse_choices(self, contest_el, contest):
         """
         Parse ``Choice`` elements for a ``Contest`` element.
 
         Args:
             contest_el: Element object for a ``Contest`` contest_element in the parsed XML
             contest: ``Contest`` object corresponding to ``Contest`` element
-            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
-                ``ResultJurisdiction`` objects
 
         Returns:
             A list of ``Choice`` elements
 
         """
-        return [self._parse_choice(c_el, contest, result_jurisdiction_lookup)
+        return [self._parse_choice(c_el, contest)
                 for c_el in contest_el.xpath('Choice')]
 
-    def _parse_choice(self, contest_el, contest, result_jurisdiction_lookup):
+    def _parse_choice(self, contest_el, contest):
         """
         Parse a single ``Choice`` element
 
         Args:
             contest_el: Element object for a ``Contest`` contest_element in the parsed XML
             contest: ``Contest`` object corresponding to ``Contest`` element
-            result_jurisdiction_lookup: Dictionary mapping jurisdiction names to
-                ``ResultJurisdiction`` objects
 
         Returns:
             A ``Choice`` element
@@ -388,15 +404,16 @@ class Parser(object):
             ))
 
             for subjurisdiction_el in vt_el.xpath('./Precinct') + vt_el.xpath('./County'):
-              if subjurisdiction_el.attrib['name'] in result_jurisdiction_lookup:
-                  subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
-                  choice.add_result(Result(
-                      contest=contest,
-                      vote_type=vote_type,
-                      jurisdiction=subjurisdiction,
-                      votes=int(subjurisdiction_el.attrib['votes']),
-                      choice=choice
-                  ))
+                subjurisdiction = self.get_result_jurisdiction(subjurisdiction_el.attrib['name'])
+                subjurisdiction = self._get_or_create_result_jurisdiction(subjurisdiction_el)
+                choice.add_result(Result(
+                    contest=contest,
+                    vote_type=vote_type,
+                    jurisdiction=subjurisdiction,
+                    votes=int(subjurisdiction_el.attrib['votes']),
+                    choice=choice
+                ))
+
         return choice
 
     @classmethod
@@ -441,7 +458,7 @@ class ResultAggregatorMixin(object):
         self._results.append(result)
 
 
-RESULT_FIELDS = [
+RESULT_JURISDICTION_FIELDS = [
     'name',
     'total_voters',
     'ballots_cast',
@@ -453,9 +470,19 @@ RESULT_FIELDS = [
     'level',
 ]
 
+RESULT_JURISDICTION_FIELD_CONVERTERS = {
+    'total_voters': int,
+    'ballots_cast': int,
+    'voter_turnout': float,
+    'percent_reporting': float,
+    'precincts_participating': float,
+    'precincts_reported': float,
+    'precincts_reporting_percent': float,
+}
+
 
 class ResultJurisdiction(ResultAggregatorMixin,
-        namedtuple('ResultJurisdictionBase', RESULT_FIELDS)):
+        namedtuple('ResultJurisdictionBase', RESULT_JURISDICTION_FIELDS)):
     """
     A jurisdiction such as a county or precinct that has associated results
     """
