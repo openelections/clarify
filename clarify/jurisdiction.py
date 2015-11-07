@@ -164,10 +164,20 @@ class Jurisdiction(object):
         """
         Returns link to detailed report depending on format. Formats are xls, txt and xml.
         """
-        return self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
+        url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
+        r = requests.get(url)
+        if r.status_code == 200:
+            return url
+        else:
+            return None
 
     def _get_summary_url(self):
         """
         Returns the summary report URL for a jurisdiction.
         """
-        return self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"
+        url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"
+        r = requests.get(url)
+        if r.status_code == 200:
+            return url
+        else:
+            return None
