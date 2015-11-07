@@ -39,7 +39,16 @@ class Jurisdiction(object):
 
         subjurisdictions_url = self._get_subjurisdictions_url()
         if not subjurisdictions_url:
-            return []
+            json_url = self.url.replace('summary.html','json/electionsettings.json')
+            try:
+                r = requests.get(json_url)
+                r.raise_for_status()
+                jurisdictions = []
+                counties = r.json()['settings']['electiondetails']['participatingcounties']
+                jurisdictions = self._get_subjurisdictions_urls_from_json(counties)
+                return jurisdictions
+            except requests.exceptions.HTTPError:
+                return []
         try:
             r = requests.get(subjurisdictions_url)
             r.raise_for_status()
@@ -68,8 +77,18 @@ class Jurisdiction(object):
         segment, that gets stripped out.
         """
         if 'Web01/' in self.url:
-            self.url = self.url.replace('Web01/','')
-        return parse.urlsplit(self.url)
+            url = self.url.replace('Web01/','')
+        else:
+            url = self.url
+        return parse.urlsplit(url)
+
+    def _get_subjurisdictions_urls_from_json(self, counties):
+        subjurisdictions = []
+        for c in counties:
+            name, first_id, second_id, date, fill = c.split('|')
+            url = 'http://results.enr.clarityelections.com/'+self.state+'/'+name+'/'+first_id+'/'+second_id+'/Web01/en/summary.html'
+            subjurisdictions.append(Jurisdiction(url, 'county', name))
+        return subjurisdictions
 
     def _get_state_from_url(self):
         """
@@ -84,6 +103,8 @@ class Jurisdiction(object):
         not a state, returns None.
         """
         if self.level != 'state':
+            return None
+        elif 'Web01/' in self.url:
             return None
         else:
             newpath = '/'.join(self.parsed_url.path.split('/')[:-1]) + '/select-county.html'
