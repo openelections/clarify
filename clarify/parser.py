@@ -365,6 +365,7 @@ class Parser(object):
             contest=contest,
             key=contest_el.attrib['key'],
             text=contest_el.attrib['text'],
+            party=contest_el.attrib['party'],
             total_votes=contest_el.attrib['totalVotes'],
         )
         for vt_el in contest_el.xpath('./VoteType'):
@@ -503,6 +504,7 @@ CHOICE_FIELDS = [
     'contest',
     'key',
     'text',
+    'party',
     'total_votes'
 ]
 
