@@ -361,13 +361,20 @@ class Parser(object):
             A ``Choice`` element
 
         """
+
+        try:
+            party=contest_el.attrib['party']
+        except:
+            party=None
+
         choice = Choice(
             contest=contest,
             key=contest_el.attrib['key'],
             text=contest_el.attrib['text'],
-            party=contest_el.attrib['party'],
+            party=party,
             total_votes=contest_el.attrib['totalVotes'],
         )
+
         for vt_el in contest_el.xpath('./VoteType'):
             vote_type = vt_el.attrib['name']
             choice.add_result(Result(
@@ -387,7 +394,6 @@ class Parser(object):
                     votes=int(subjurisdiction_el.attrib['votes']),
                     choice=choice
                 ))
-
         return choice
 
     @classmethod
