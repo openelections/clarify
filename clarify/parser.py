@@ -319,14 +319,16 @@ class Parser(object):
             # The subjurisdiction elements are either ``Precinct`` for county or
             # city files or ``County`` for state files
             for subjurisdiction_el in vt_el.xpath('./Precinct') + vt_el.xpath('./County'):
-                subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
-                results.append(Result(
-                    contest=contest,
-                    vote_type=vote_type,
-                    jurisdiction=subjurisdiction,
-                    votes=int(subjurisdiction_el.attrib['votes']),
-                    choice=None
-                ))
+                if subjurisdiction_el.attrib['name'] in result_jurisdiction_lookup:
+                    subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
+
+                    results.append(Result(
+                        contest=contest,
+                        vote_type=vote_type,
+                        jurisdiction=subjurisdiction,
+                        votes=int(subjurisdiction_el.attrib['votes']),
+                        choice=None
+                    ))
 
         return results
 
@@ -386,14 +388,16 @@ class Parser(object):
             ))
 
             for subjurisdiction_el in vt_el.xpath('./Precinct') + vt_el.xpath('./County'):
-                subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
-                choice.add_result(Result(
-                    contest=contest,
-                    vote_type=vote_type,
-                    jurisdiction=subjurisdiction,
-                    votes=int(subjurisdiction_el.attrib['votes']),
-                    choice=choice
-                ))
+		if subjurisdiction_el.attrib['name'] in result_jurisdiction_lookup:
+                    subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
+                
+                    choice.add_result(Result(
+                        contest=contest,
+                        vote_type=vote_type,
+                        jurisdiction=subjurisdiction,
+                        votes=int(subjurisdiction_el.attrib['votes']),
+                        choice=choice
+                    ))
         return choice
 
     @classmethod
