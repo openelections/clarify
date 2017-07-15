@@ -388,16 +388,15 @@ class Parser(object):
             ))
 
             for subjurisdiction_el in vt_el.xpath('./Precinct') + vt_el.xpath('./County'):
-		if subjurisdiction_el.attrib['name'] in result_jurisdiction_lookup:
-                    subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
-                
-                    choice.add_result(Result(
-                        contest=contest,
-                        vote_type=vote_type,
-                        jurisdiction=subjurisdiction,
-                        votes=int(subjurisdiction_el.attrib['votes']),
-                        choice=choice
-                    ))
+              if subjurisdiction_el.attrib['name'] in result_jurisdiction_lookup:
+                  subjurisdiction = result_jurisdiction_lookup[subjurisdiction_el.attrib['name']]
+                  choice.add_result(Result(
+                      contest=contest,
+                      vote_type=vote_type,
+                      jurisdiction=subjurisdiction,
+                      votes=int(subjurisdiction_el.attrib['votes']),
+                      choice=choice
+                  ))
         return choice
 
     @classmethod
