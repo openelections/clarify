@@ -1,2 +1,4 @@
+codecov
+coverage
 nose
 responses
