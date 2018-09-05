@@ -184,6 +184,10 @@ class TestJurisdiction(TestCase):
             callback=mock_county_response_callback,
             content_type='text/html')
 
+        # Initialization will fail if this connection is not allowed.
+        # XXX: This is fragile, and Jurisdiction should be refactored to prevent this from being necessary.
+        responses.add(responses.GET, "https://results.enr.clarityelections.com/KY/50972/131636/reports/summary.zip", status=200)
+
         jurisdiction = Jurisdiction(url=url, level='state')
         jurisdictions = jurisdiction.get_subjurisdictions()
         # Kentucky has 120 counties
