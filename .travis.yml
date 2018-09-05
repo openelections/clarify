@@ -10,7 +10,9 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
-script: "python setup.py test"
+script: coverage run setup.py test
+after_success:
+  - codecov
 matrix:
   allow_failures:
     # Travis CI is having trouble building these versions of Python right now.

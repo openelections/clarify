@@ -2,6 +2,7 @@ Clarify
 =======
 
 [![Build Status](https://travis-ci.org/openelections/clarify.svg?branch=master)](https://travis-ci.org/openelections/clarify)
+[![Code Coverage](https://codecov.io/gh/openelections/clarify/branch/master/graph/badge.svg)](https://codecov.io/gh/openelections/clarify)
 
 A Python library to discover and parse results for jurisdictions that use election results reporting systems from [SOE Software](http://www.soesoftware.com/product/clarity-election-night-reporting/), a Florida-based company that offers its products under the "Clarity" name. Web sites using Clarity are recognizable by URLs that begin with "http://results.enr.clarityelections.com" and have zip files containing structured data in XML, CSV and XLS format.
 
