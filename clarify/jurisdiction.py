@@ -86,7 +86,7 @@ class Jurisdiction(object):
         subjurisdictions = []
         for c in counties:
             name, first_id, second_id, date, fill = c.split('|')
-            url = 'http://results.enr.clarityelections.com/'+self.state+'/'+name+'/'+first_id+'/'+second_id+'/Web01/en/summary.html'
+            url = 'https://results.enr.clarityelections.com/'+self.state+'/'+name+'/'+first_id+'/'+second_id+'/Web01/en/summary.html'
             subjurisdictions.append(Jurisdiction(url, 'county', name))
         return subjurisdictions
 
@@ -144,7 +144,7 @@ class Jurisdiction(object):
         """
         Returns base URL used by _subjurisdiction_url.
         """
-        return 'http://results.enr.clarityelections.com/' + self.state
+        return 'https://results.enr.clarityelections.com/' + self.state
 
     @classmethod
     def _scrape_subjurisdiction_summary_path(cls, html):
