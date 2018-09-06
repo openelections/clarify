@@ -214,6 +214,15 @@ class TestJurisdiction(TestCase):
         path = Jurisdiction._scrape_subjurisdiction_summary_path(html)
         self.assertEqual(path, "/27401/en/summary.html")
 
+    def test_get_subjurisdictions_invalid(self):
+        """An invalid jurisdiction should return an empty list"""
+        url = "https://results.enr.clarityelections.com/FL/54234/148685/en/summary.html"
+        jurisdiction = Jurisdiction(url=url, level="state")
+        subjurisdictions = jurisdiction.get_subjurisdictions()
+        # An invalid jurisdiction has no sub-jurisdictions with results
+        expected_subjurisdiction_count = 0
+        self.assertEqual(len(subjurisdictions), expected_subjurisdiction_count)
+
     def test_get_sub_jurisdictions_none(self):
         """A jurisdiction with no sub-jurisdictions should return an empty list"""
         # Construct a Jurisdiction for Rockford City, IL 2014 General Election
@@ -233,6 +242,30 @@ class TestJurisdiction(TestCase):
         # A city has no sub-jurisdictions with results
         expected_jurisdiction_count = 0
         self.assertEqual(len(jurisdictions), expected_jurisdiction_count)
+
+    @responses.activate
+    def test_get_subjurisdictions_counties_web01(self):
+        """A jurisdiction with sub-jurisdictions with Web01 in url should return a list of URLs"""
+        # Avoid hitting all the summary URLs for each subjurisdiction.
+        responses.add(
+            method=responses.GET,
+            url=re.compile(r"^https://results.enr.clarityelections.com/AR/(.+/[0-9]+/[0-9]+/Web01/en/summary.html|(.+/)?[0-9]+/[0-9]+/reports/summary.zip)$"),
+            status=200,
+        )
+
+        # Construct a Jurisdiction for Arkansas 2014 General Election
+        url = "https://results.enr.clarityelections.com/AR/53237/149294/Web01/en/summary.html"
+        responses.add_passthru(url)
+        responses.add_passthru(url.replace("summary.html", "json/electionsettings.json"))
+        jurisdiction = Jurisdiction(url=url, level="state")
+
+        subjurisdictions = jurisdiction.get_subjurisdictions()
+
+        # A state like AR has county sub-jurisdictions with results
+        expected_subjurisdiction_count = 75
+        self.assertEqual(len(subjurisdictions), expected_subjurisdiction_count)
+
+        # TODO: Actually check the values in subjurisdictions.
 
     def test_parsed_url_web01_stripped(self):
         """
@@ -263,6 +296,12 @@ class TestJurisdiction(TestCase):
         jurisdiction = Jurisdiction(url=url, level='county')
         expected_url = 'https://results.enr.clarityelections.com/CO/53335/149144/reports/detailxls.zip'
         self.assertEqual(jurisdiction.report_url('xls'), expected_url)
+
+    def test_report_url_fake(self):
+        # Construct a Jurisdiction for Colorado 2014 General Election
+        url = "https://results.enr.clarityelections.com/CO/53335/149144/en/summary.html"
+        jurisdiction = Jurisdiction(url=url, level="county")
+        self.assertIsNone(jurisdiction.report_url("fake"))
 
     def test_summary_url(self):
         # Construct a Jurisdiction for Colorado 2014 General Election
