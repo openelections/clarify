@@ -5,14 +5,16 @@ import re
 import dateutil.parser
 from lxml import etree
 
+
 class Parser(object):
+
     """
     Parser for a jurisdiction's detail XML report files
 
     An example for such a file can be found at
     http://results.enr.clarityelections.com/KY/Adair/15263/27401/reports/detailxml.zip
-
     """
+
     def __init__(self):
         self.timestamp = None
         self.election_name = None
@@ -293,15 +295,15 @@ class Parser(object):
 
         """
         contest = Contest(
-           key=self._get_attrib(contest_el, 'key'),
-           text=self._get_attrib(contest_el, 'text'),
-           vote_for=self._get_attrib(contest_el, 'voteFor', int),
-           is_question=self._get_attrib(contest_el, 'isQuestion', self._parse_boolean),
-           precincts_reporting=self._get_attrib(contest_el,'precinctsReporting', int),
-           precincts_reported=self._get_attrib(contest_el, 'precinctsReported', int),
-           precincts_participating=self._get_attrib(contest_el, 'precinctsParticipating', int),
-           counties_reported=self._get_attrib(contest_el, 'countiesReported', int),
-           counties_participating=self._get_attrib(contest_el, 'countiesParticipating', int)
+            key=self._get_attrib(contest_el, 'key'),
+            text=self._get_attrib(contest_el, 'text'),
+            vote_for=self._get_attrib(contest_el, 'voteFor', int),
+            is_question=self._get_attrib(contest_el, 'isQuestion', self._parse_boolean),
+            precincts_reporting=self._get_attrib(contest_el, 'precinctsReporting', int),
+            precincts_reported=self._get_attrib(contest_el, 'precinctsReported', int),
+            precincts_participating=self._get_attrib(contest_el, 'precinctsParticipating', int),
+            counties_reported=self._get_attrib(contest_el, 'countiesReported', int),
+            counties_participating=self._get_attrib(contest_el, 'countiesParticipating', int)
         )
 
         for r in self._parse_no_choice_results(contest_el, contest):
@@ -381,9 +383,9 @@ class Parser(object):
         """
 
         try:
-            party=contest_el.attrib['party']
-        except:
-            party=None
+            party = contest_el.attrib['party']
+        except KeyError:
+            party = None
 
         choice = Choice(
             contest=contest,
@@ -396,11 +398,11 @@ class Parser(object):
         for vt_el in contest_el.xpath('./VoteType'):
             vote_type = vt_el.attrib['name']
             choice.add_result(Result(
-              contest=contest,
-              vote_type=vote_type,
-              jurisdiction=None,
-              votes=int(vt_el.attrib['votes']),
-              choice=choice
+                contest=contest,
+                vote_type=vote_type,
+                jurisdiction=None,
+                votes=int(vt_el.attrib['votes']),
+                choice=choice
             ))
 
             for subjurisdiction_el in vt_el.xpath('./Precinct') + vt_el.xpath('./County'):
@@ -481,8 +483,10 @@ RESULT_JURISDICTION_FIELD_CONVERTERS = {
 }
 
 
-class ResultJurisdiction(ResultAggregatorMixin,
-        namedtuple('ResultJurisdictionBase', RESULT_JURISDICTION_FIELDS)):
+class ResultJurisdiction(
+    ResultAggregatorMixin,
+    namedtuple('ResultJurisdictionBase', RESULT_JURISDICTION_FIELDS),
+):
     """
     A jurisdiction such as a county or precinct that has associated results
     """

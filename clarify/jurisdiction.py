@@ -100,7 +100,7 @@ class Jurisdiction(object):
 
         subjurisdictions_url = self._get_subjurisdictions_url()
         if not subjurisdictions_url:
-            json_url = self.url.replace('summary.html','json/electionsettings.json')
+            json_url = self.url.replace('summary.html', 'json/electionsettings.json')
             try:
                 r = requests.get(json_url)
                 r.raise_for_status()
@@ -138,7 +138,7 @@ class Jurisdiction(object):
         segment, that gets stripped out.
         """
         if 'Web01/' in self.url:
-            url = self.url.replace('Web01/','')
+            url = self.url.replace('Web01/', '')
         else:
             url = self.url
         return parse.urlsplit(url)
@@ -147,7 +147,7 @@ class Jurisdiction(object):
         subjurisdictions = []
         for c in counties:
             name, first_id, second_id, date, fill = c.split('|')
-            url = 'https://results.enr.clarityelections.com/'+self.state+'/'+name+'/'+first_id+'/'+second_id+'/Web01/en/summary.html'
+            url = 'https://results.enr.clarityelections.com/' + self.state + '/' + name + '/' + first_id + '/' + second_id + '/Web01/en/summary.html'
             subjurisdictions.append(Jurisdiction(url, 'county', name))
         return subjurisdictions
 
@@ -169,8 +169,13 @@ class Jurisdiction(object):
             return None
         else:
             newpath = '/'.join(self.parsed_url.path.split('/')[:-1]) + '/select-county.html'
-            parts = (self.parsed_url.scheme, self.parsed_url.netloc, newpath, self.parsed_url.query,
-                     self.parsed_url.fragment)
+            parts = (
+                self.parsed_url.scheme,
+                self.parsed_url.netloc,
+                newpath,
+                self.parsed_url.query,
+                self.parsed_url.fragment,
+            )
             return parse.urlunsplit(parts)
 
     def _scrape_subjurisdiction_paths(self, html):
@@ -217,9 +222,9 @@ class Jurisdiction(object):
         tree = lxml.html.fromstring(html)
         try:
             segment = tree.xpath("//meta[@content]")[0].values()[1].split("=")[1].split('/')[1]
-        except:
+        except (IndexError, AttributeError):
             segment = tree.xpath("//script")[0].values()[0].split('/')[1]
-        return '/'+ segment + '/en/summary.html'
+        return '/' + segment + '/en/summary.html'
 
     def report_url(self, fmt):
         """
