@@ -34,6 +34,40 @@ class TestPrecinctParser(unittest.TestCase):
 
         self.assertEqual(len(er.results), num_expected_results)
 
+        result_jurisdiction_name = "A105"
+        result_jurisdiction = er.get_result_jurisdiction(result_jurisdiction_name)
+
+        self.assertEqual(str(result_jurisdiction), result_jurisdiction_name)
+        self.assertEqual(result_jurisdiction.name, result_jurisdiction_name)
+        self.assertEqual(result_jurisdiction.total_voters, 0)
+        self.assertEqual(result_jurisdiction.ballots_cast, 171)
+        self.assertEqual(result_jurisdiction.voter_turnout, 0)
+        self.assertEqual(result_jurisdiction.percent_reporting, 4)
+
+        self.assertEqual(result_jurisdiction, precinct)
+
+        contest_text = "US Senator - REPUBLICAN"
+        contest = er.get_contest(contest_text)
+
+        self.assertEqual(str(contest), contest_text)
+        self.assertEqual(contest.text, contest_text)
+        self.assertEqual(contest.key, "4")
+        self.assertEqual(contest.vote_for, 1)
+        self.assertFalse(contest.is_question)
+        self.assertEqual(contest.precincts_reporting, 32)
+        self.assertEqual(contest.precincts_reported, 32)
+
+        contest_choice_text = "Matt BEVIN"
+        contest_choice = contest.choices[0]
+
+        self.assertEqual(contest_choice.contest, contest)
+
+        self.assertEqual(str(contest_choice), contest_choice_text)
+        self.assertEqual(contest_choice.text, contest_choice_text)
+        self.assertEqual(contest_choice.key, "1")
+        self.assertEqual(contest_choice.total_votes, 820)
+
+
 class TestCountyParser(unittest.TestCase):
 
     def test_parse(self):
@@ -65,3 +99,42 @@ class TestCountyParser(unittest.TestCase):
         self.assertEqual(len(er.contests), 1)
 
         self.assertEqual(len(er.results), num_expected_results)
+
+        result_jurisdiction_name = "Arkansas"
+        result_jurisdiction = er.get_result_jurisdiction(result_jurisdiction_name)
+
+        self.assertEqual(str(result_jurisdiction), result_jurisdiction_name)
+        self.assertEqual(result_jurisdiction.name, result_jurisdiction_name)
+        self.assertEqual(result_jurisdiction.total_voters, 10196)
+        self.assertEqual(result_jurisdiction.ballots_cast, 5137)
+        self.assertEqual(result_jurisdiction.voter_turnout, 50.38)
+        self.assertEqual(result_jurisdiction.precincts_participating, 30)
+        self.assertEqual(result_jurisdiction.precincts_reported, 30)
+        self.assertEqual(result_jurisdiction.precincts_reporting_percent, 100.0)
+
+        self.assertEqual(result_jurisdiction, county)
+
+        contest_text = "U.S. Senate"
+        contest = er.get_contest(contest_text)
+
+        self.assertEqual(str(contest), contest_text)
+        self.assertEqual(contest.text, contest_text)
+        self.assertEqual(contest.key, "100")
+        self.assertEqual(contest.vote_for, 1)
+        self.assertFalse(contest.is_question)
+        self.assertEqual(contest.counties_participating, 75)
+        self.assertEqual(contest.counties_reported, 75)
+        self.assertEqual(contest.precincts_participating, 2655)
+        self.assertEqual(contest.precincts_reported, 2655)
+
+        contest_choice_text = "Tom Cotton"
+        contest_choice = contest.choices[0]
+
+        self.assertEqual(contest_choice.contest, contest)
+
+        self.assertEqual(str(contest_choice), contest_choice_text)
+        self.assertEqual(contest_choice.text, contest_choice_text)
+        self.assertEqual(contest_choice.key, "001")
+        self.assertEqual(contest_choice.party, "REP")
+        self.assertEqual(contest_choice.total_votes, 477734)
+
