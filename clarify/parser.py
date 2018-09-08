@@ -374,7 +374,7 @@ class Parser(object):
             key=contest_el.attrib['key'],
             text=contest_el.attrib['text'],
             party=party,
-            total_votes=contest_el.attrib['totalVotes'],
+            total_votes=int(contest_el.attrib['totalVotes']),
         )
 
         for vt_el in contest_el.xpath('./VoteType'):
