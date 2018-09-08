@@ -2,3 +2,4 @@ codecov
 coverage
 nose
 responses
+unittest2; python_version < '3.4'
