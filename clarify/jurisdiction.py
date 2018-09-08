@@ -30,6 +30,67 @@ class Jurisdiction(object):
         self.name = name
         self.summary_url = self._get_summary_url()
 
+    @classmethod
+    def _url_ensure_trailing_slash(cls, url):
+        url_parts = parse.urlsplit(url)
+
+        # Ensure the incoming URL ends in a slash.
+        if not url_parts.path.endswith("/"):
+            url_parts = url_parts._replace(path=url_parts.path + "/")
+
+        return parse.urlunsplit(url_parts)
+
+    @classmethod
+    def get_current_ver(cls, election_url):
+        election_url_parts = parse.urlsplit(cls._url_ensure_trailing_slash(election_url))
+        election_url_parts = election_url_parts._replace(path=election_url_parts.path + "current_ver.txt")
+
+        current_ver_url = parse.urlunsplit(election_url_parts)
+
+        current_ver_response = requests.get(current_ver_url)
+
+        try:
+            current_ver_response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            return None
+
+        return current_ver_response.text
+
+    @classmethod
+    def get_latest_summary_url(cls, election_url):
+        election_url = cls._url_ensure_trailing_slash(election_url)
+
+        election_url_parts = parse.urlsplit(election_url)
+
+        current_ver = cls.get_current_ver(election_url)
+
+        # If we don't have current_ver, we can't determine a summary URL.
+        if current_ver is None:
+            return None
+
+        new_paths = [
+            election_url_parts.path + current_ver + "/Web01/en/summary.html",
+            election_url_parts.path + current_ver + "/en/summary.html",
+            # TODO: Support new-style summary pages.
+        ]
+
+        for new_path in new_paths:
+            latest_summary_url_parts = election_url_parts._replace(path=new_path)
+
+            latest_summary_url = parse.urlunsplit(latest_summary_url_parts)
+
+            latest_summary_url_response = requests.get(latest_summary_url)
+
+            try:
+                latest_summary_url_response.raise_for_status()
+            except requests.exceptions.HTTPError:
+                continue
+
+            return latest_summary_url
+
+        # If none of the expected paths succeed, return None.
+        return None
+
     def get_subjurisdictions(self):
         """
         Returns a list of subjurisdictions depending on the level

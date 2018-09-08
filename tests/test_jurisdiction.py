@@ -1,7 +1,12 @@
 import os
 import os.path
 import re
+
 from unittest import TestCase
+
+# Require TestCase to have subTest().
+if not hasattr(TestCase, "subTest"):
+    from unittest2 import TestCase
 
 import responses
 
@@ -309,3 +314,56 @@ class TestJurisdiction(TestCase):
         jurisdiction = Jurisdiction(url=url, level='state')
         expected_url = 'https://results.enr.clarityelections.com/CO/53335/149144/reports/summary.zip'
         self.assertEqual(jurisdiction.summary_url, expected_url)
+
+    def test__url_ensure_trailing_slash(self):
+        url_with = "https://results.enr.clarityelections.com/CO/63746/"
+        url_without = "https://results.enr.clarityelections.com/CO/63746"
+
+        self.assertEqual(Jurisdiction._url_ensure_trailing_slash(url_with), url_with)
+        self.assertEqual(Jurisdiction._url_ensure_trailing_slash(url_without), url_with)
+
+    def test_get_current_ver(self):
+        election_urls = [
+            "https://results.enr.clarityelections.com/CO/63746/",
+            "https://results.enr.clarityelections.com/CO/Boulder/43040/",
+            "https://results.enr.clarityelections.com/CO/Bogus/43040/",
+            "https://results.enr.clarityelections.com/AR/75879/",
+        ]
+        expected_current_vers = [
+            "184388",
+            "114182",
+            None,
+            "208723",
+        ]
+
+        for (election_url, expected_current_ver) in dict(zip(election_urls, expected_current_vers)).items():
+            with self.subTest(election_url=election_url, expected_current_ver=expected_current_ver):
+                current_ver = Jurisdiction.get_current_ver(election_url)
+
+                if expected_current_ver is None:
+                    self.assertIsNone(current_ver)
+                else:
+                    self.assertEqual(current_ver, expected_current_ver)
+
+    def test_get_latest_summary_url(self):
+        election_urls = [
+            "https://results.enr.clarityelections.com/CO/63746/",
+            "https://results.enr.clarityelections.com/CO/Boulder/43040/",
+            "https://results.enr.clarityelections.com/CO/Bogus/43040/",
+            "http://results.enr.clarityelections.com/AR/75879/",
+        ]
+        expected_urls = [
+            "https://results.enr.clarityelections.com/CO/63746/184388/Web01/en/summary.html",
+            "https://results.enr.clarityelections.com/CO/Boulder/43040/114182/en/summary.html",
+            None,
+            None,  # TODO: This uses new-style summary pages.
+        ]
+
+        for (election_url, expected_url) in dict(zip(election_urls, expected_urls)).items():
+            with self.subTest(election_url=election_url, expected_url=expected_url):
+                latest_summary_url = Jurisdiction.get_latest_summary_url(election_url)
+
+                if expected_url is None:
+                    self.assertIsNone(latest_summary_url)
+                else:
+                    self.assertEqual(latest_summary_url, expected_url)
