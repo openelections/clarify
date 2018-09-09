@@ -1,7 +1,107 @@
 import datetime
 import unittest
 
-from clarify.parser import Parser
+import lxml.etree
+
+from clarify.parser import (Parser, ResultJurisdiction)
+
+
+class TestParser(unittest.TestCase):
+
+    def test__underscore_to_camel(self):
+        self.assertEqual(Parser._underscore_to_camel(""), "")
+        self.assertEqual(Parser._underscore_to_camel("test"), "test")
+        self.assertEqual(Parser._underscore_to_camel("test_again"), "testAgain")
+        self.assertEqual(Parser._underscore_to_camel("test_again_but_longer"), "testAgainButLonger")
+        self.assertEqual(Parser._underscore_to_camel("_test_again"), "TestAgain")  # XXX: Is this what we expect?
+        self.assertEqual(Parser._underscore_to_camel("testing_123"), "testing123")
+        self.assertEqual(Parser._underscore_to_camel("testing_123_again"), "testing123Again")
+
+    def test__parse_result_jurisdiction(self):
+        tag_name = "County"
+        attributes = {
+            "name": "Arkansas",
+            "totalVoters": "10196",
+            "ballotsCast": "5137",
+            "voterTurnout": "50.38",
+            "percentReporting": "100.00",
+            "precinctsParticipating": "30",
+            "precinctsReported": "30",
+            "precinctsReportingPercent": "100.00",
+        }
+
+        result_jurisdiction_element = lxml.etree.Element(tag_name, attributes)
+
+        result_jurisdiction = Parser._parse_result_jurisdiction(result_jurisdiction_element)
+
+        self.assertIsInstance(result_jurisdiction, ResultJurisdiction)
+
+        self.assertTrue(hasattr(result_jurisdiction, "level"))
+        self.assertTrue(hasattr(result_jurisdiction, "name"))
+        self.assertTrue(hasattr(result_jurisdiction, "total_voters"))
+        self.assertTrue(hasattr(result_jurisdiction, "ballots_cast"))
+        self.assertTrue(hasattr(result_jurisdiction, "voter_turnout"))
+        self.assertTrue(hasattr(result_jurisdiction, "percent_reporting"))
+        self.assertTrue(hasattr(result_jurisdiction, "precincts_participating"))
+        self.assertTrue(hasattr(result_jurisdiction, "precincts_reported"))
+        self.assertTrue(hasattr(result_jurisdiction, "precincts_reporting_percent"))
+
+        self.assertEqual(result_jurisdiction.level, tag_name.lower())
+        self.assertEqual(result_jurisdiction.name, attributes["name"])
+        self.assertEqual(result_jurisdiction.total_voters, int(attributes["totalVoters"]))
+        self.assertEqual(result_jurisdiction.ballots_cast, int(attributes["ballotsCast"]))
+        self.assertEqual(result_jurisdiction.voter_turnout, float(attributes["voterTurnout"]))
+        self.assertEqual(result_jurisdiction.percent_reporting, float(attributes["percentReporting"]))
+        self.assertEqual(result_jurisdiction.precincts_participating, float(attributes["precinctsParticipating"]))
+        self.assertEqual(result_jurisdiction.precincts_reported, float(attributes["precinctsReported"]))
+        self.assertEqual(result_jurisdiction.precincts_reporting_percent, float(attributes["precinctsReportingPercent"]))
+
+    def test__get_or_create_result_jurisdiction(self):
+        result_jurisdiction_name = "Test"
+        result_jurisdiction_element = lxml.etree.Element("County", { "name": result_jurisdiction_name })
+        result_jurisdiction = Parser._parse_result_jurisdiction(result_jurisdiction_element)
+
+        parser = Parser()
+
+        self.assertEqual(parser._result_jurisdictions, [])
+        self.assertEqual(parser._result_jurisdiction_lookup, {})
+
+        # Test the "create" part.
+        parser._get_or_create_result_jurisdiction(result_jurisdiction_element)
+
+        self.assertEqual(parser._result_jurisdictions, [ result_jurisdiction ])
+        self.assertEqual(parser._result_jurisdiction_lookup, { result_jurisdiction_name: result_jurisdiction })
+
+        # Test the "get" part.
+        parser._get_or_create_result_jurisdiction(result_jurisdiction_element)
+
+        self.assertEqual(parser._result_jurisdictions, [ result_jurisdiction ])
+        self.assertEqual(parser._result_jurisdiction_lookup, { result_jurisdiction_name: result_jurisdiction })
+
+    def test_add_result_jurisdiction(self):
+        result_jurisdiction_name = "Test"
+        result_jurisdiction = ResultJurisdiction(
+            name=result_jurisdiction_name,
+            total_voters=0,
+            ballots_cast=0,
+            voter_turnout=100.0,
+            percent_reporting=100.0,
+            precincts_participating=0,
+            precincts_reported=0,
+            precincts_reporting_percent=100.0,
+            level="county",
+        )
+
+        parser = Parser()
+
+        self.assertEqual(parser._result_jurisdictions, [])
+        self.assertEqual(parser._result_jurisdiction_lookup, {})
+
+        parser.add_result_jurisdiction(result_jurisdiction)
+
+        self.assertEqual(parser._result_jurisdictions, [ result_jurisdiction ])
+        self.assertEqual(parser._result_jurisdiction_lookup, { result_jurisdiction_name: result_jurisdiction })
+
 
 class TestPrecinctParser(unittest.TestCase):
     def test_parse(self):
@@ -137,4 +237,3 @@ class TestCountyParser(unittest.TestCase):
         self.assertEqual(contest_choice.key, "001")
         self.assertEqual(contest_choice.party, "REP")
         self.assertEqual(contest_choice.total_votes, 477734)
-
