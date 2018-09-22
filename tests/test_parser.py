@@ -109,8 +109,10 @@ class TestPrecinctParser(unittest.TestCase):
         num_candidates = 5
         # Overvotes and undervotes
         num_pseudo_candidates = 2
-        num_expected_results = (num_candidates * (num_precincts + 1) +
-                num_pseudo_candidates * (num_precincts + 1))
+        num_expected_results = (
+            num_candidates * (num_precincts + 1) +
+            num_pseudo_candidates * (num_precincts + 1)
+        )
 
         er = Parser()
         er.parse('tests/data/precinct.xml')
@@ -175,7 +177,10 @@ class TestCountyParser(unittest.TestCase):
         num_candidates = 1
         # Election
         num_vote_types = 4
-        num_expected_results = (num_vote_types * num_counties * num_candidates) + (num_vote_types * num_candidates)
+        num_expected_results = (
+            (num_vote_types * num_counties * num_candidates) +
+            (num_vote_types * num_candidates)
+        )
 
         er = Parser()
         er.parse('tests/data/county.xml')

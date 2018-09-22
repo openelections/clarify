@@ -138,11 +138,12 @@ COUNTIES_AR = [
 # IDs for county pages that ultimately resolve from
 # http://results.enr.clarityelections.com/KY/50972/131636/en/select-county.html
 # Seem to start at 129035 and increment by 1
-COUNTY_IDS_PAIRS = {i:c for i, c in enumerate(COUNTIES_AR, start=129035)}
+COUNTY_IDS_PAIRS = {i: c for i, c in enumerate(COUNTIES_AR, start=129035)}
 
 COUNTY_REDIRECT_URL_RE = re.compile(r'https://results.enr.clarityelections.com/(?P<state>[A-Z]{2})/(?P<county>[A-Za-z\.]+)/(?P<page_id>\d+)/')
 
 COUNTY_URL_RE = re.compile(r'https://results.enr.clarityelections.com/(?P<state>[A-Z]{2})/(?P<county>[A-Za-z\.]+)/(?P<page_id>\d+)/(?P<page_id_2>\d+)/')
+
 
 def mock_county_response_callback(req):
     m = COUNTY_REDIRECT_URL_RE.match(req.url)
@@ -150,12 +151,14 @@ def mock_county_response_callback(req):
     resp_body = mock_subjurisdiction_redirect_page_script(m.group('page_id'))
     return (200, {}, resp_body)
 
+
 def mock_subjurisdiction_redirect_page_script(page_id):
     tpl = """<html><head>
                     <script src="./{page_id}/js/version.js" type="text/javascript"></script>
                     <script type="text/javascript">TemplateRedirect("summary.html","./{page_id}", "", "Mobile01");</script>
                     </head></html>"""
     return tpl.format(page_id=page_id)
+
 
 def mock_subjurisdiction_redirect_page_meta(page_id):
     tpl = """<html><head><META HTTP-EQUIV="Refresh" CONTENT="0; URL=./{page_id}/en/summary.html"></head></html>"""
@@ -175,8 +178,11 @@ class TestJurisdiction(TestCase):
         url = 'https://results.enr.clarityelections.com/KY/50972/131636/en/summary.html'
         # Mock the response for the county list
         county_url = 'https://results.enr.clarityelections.com/KY/50972/131636/en/select-county.html'
-        response_body_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-            'data', 'select-county__KY__50972__131636.html')
+        response_body_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'data',
+            'select-county__KY__50972__131636.html',
+        )
         with open(response_body_path) as f:
             response_body = f.read()
         responses.add(responses.GET, county_url,
@@ -185,13 +191,20 @@ class TestJurisdiction(TestCase):
 
         # Mock responses to URLs like
         # http://results.enr.clarityelections.com/KY/Adair/50974/
-        responses.add_callback(responses.GET, COUNTY_REDIRECT_URL_RE,
+        responses.add_callback(
+            responses.GET,
+            COUNTY_REDIRECT_URL_RE,
             callback=mock_county_response_callback,
-            content_type='text/html')
+            content_type='text/html',
+        )
 
         # Initialization will fail if this connection is not allowed.
         # XXX: This is fragile, and Jurisdiction should be refactored to prevent this from being necessary.
-        responses.add(responses.GET, "https://results.enr.clarityelections.com/KY/50972/131636/reports/summary.zip", status=200)
+        responses.add(
+            responses.GET,
+            "https://results.enr.clarityelections.com/KY/50972/131636/reports/summary.zip",
+            status=200,
+        )
 
         jurisdiction = Jurisdiction(url=url, level='state')
         jurisdictions = jurisdiction.get_subjurisdictions()
