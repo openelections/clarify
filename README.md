@@ -8,7 +8,7 @@ A Python library to discover and parse results for jurisdictions that use electi
 
 Clarify offers an interface for discovering the locations of those zip files and another for parsing the XML versions of the data contained within them. Currently it does not handle downloading and unzipping those files, leaving that to the user.
 
-Clarify is tested using Python 2.7, 3.4, 3.5, and 3.6.
+Clarify is tested using Python 2.7, 3.4, 3.5, 3.6, and 3.7.
 
 Installation
 -------------
