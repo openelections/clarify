@@ -1,7 +1,12 @@
 History
 =======
 
-0.4.0 (2018-XX-XX)
+0.5.0 (2018-XX-XX)
+------------------
+
+
+
+0.4.0 (2018-10-06)
 ------------------
 
 - Handle subjurisdiction without results (e.g. summary lines).
