@@ -29,6 +29,7 @@ class Jurisdiction(object):
         self.level = level
         self.name = name
         self.summary_url = self._get_summary_url()
+        self.current_ver = self._get_current_ver(url)
 
     @classmethod
     def _url_ensure_trailing_slash(cls, url):
@@ -41,9 +42,13 @@ class Jurisdiction(object):
         return parse.urlunsplit(url_parts)
 
     @classmethod
-    def get_current_ver(cls, election_url):
+    def _get_current_ver(cls, election_url):
         election_url_parts = parse.urlsplit(cls._url_ensure_trailing_slash(election_url))
-        election_url_parts = election_url_parts._replace(path=election_url_parts.path + "current_ver.txt")
+        if 'Web02' in election_url:
+            cls.parsed_url = election_url_parts._replace(path="/".join(election_url_parts.path.split('/')[:3]) + "/current_ver.txt", fragment='')
+            election_url_parts =  cls.parsed_url
+        else:
+            election_url_parts = election_url_parts._replace(path=election_url_parts.path + "current_ver.txt")
 
         current_ver_url = parse.urlunsplit(election_url_parts)
 
@@ -59,19 +64,22 @@ class Jurisdiction(object):
     @classmethod
     def get_latest_summary_url(cls, election_url):
         election_url = cls._url_ensure_trailing_slash(election_url)
-
-        election_url_parts = parse.urlsplit(election_url)
-
-        current_ver = cls.get_current_ver(election_url)
+        current_ver = cls._get_current_ver(election_url)
 
         # If we don't have current_ver, we can't determine a summary URL.
         if current_ver is None:
             return None
 
+        if 'Web02' in election_url:
+            election_url_parts = parse.urlsplit(election_url)
+            election_url_parts = election_url_parts._replace(path="/".join(election_url_parts.path.split('/')[:3]), fragment='')
+        else:
+            election_url_parts = parse.urlsplit(election_url)
+
         new_paths = [
+            election_url_parts.path + '/' + current_ver + "/json/en/summary.json",
             election_url_parts.path + current_ver + "/Web01/en/summary.html",
             election_url_parts.path + current_ver + "/en/summary.html",
-            # TODO: Support new-style summary pages.
         ]
 
         for new_path in new_paths:
@@ -99,8 +107,8 @@ class Jurisdiction(object):
         """
 
         subjurisdictions_url = self._get_subjurisdictions_url()
-        if not subjurisdictions_url:
-            json_url = self.url.replace('summary.html', 'json/electionsettings.json')
+        if 'Web02' in self.url:
+            json_url = self.get_latest_summary_url(self.url).replace('summary.json', 'electionsettings.json')
             try:
                 r = requests.get(json_url)
                 r.raise_for_status()
@@ -110,6 +118,26 @@ class Jurisdiction(object):
                 return jurisdictions
             except requests.exceptions.HTTPError:
                 return []
+        elif not subjurisdictions_url:
+            json_url = self.url.replace('summary.html', 'json/electionsettings.json')
+            try:
+                r = requests.get(json_url)
+                r.raise_for_status()
+                jurisdictions = []
+                counties = r.json()['settings']['electiondetails']['participatingcounties']
+                jurisdictions = self._get_subjurisdictions_urls_from_json(counties)
+                return jurisdictions
+            except requests.exceptions.HTTPError:
+                json_url = self.url.replace('summary.html', 'json/en/electionsettings.json')
+                try:
+                    r = requests.get(json_url)
+                    r.raise_for_status()
+                    jurisdictions = []
+                    counties = r.json()['settings']['electiondetails']['participatingcounties']
+                    jurisdictions = self._get_subjurisdictions_urls_from_json(counties)
+                    return jurisdictions
+                except requests.exceptions.HTTPError:
+                    return []
         try:
             r = requests.get(subjurisdictions_url)
             r.raise_for_status()
