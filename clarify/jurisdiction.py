@@ -29,7 +29,7 @@ class Jurisdiction(object):
         self.level = level
         self.name = name
         self.summary_url = self._get_summary_url()
-        self.current_ver = self._get_current_ver(url)
+        self.current_ver = self.get_current_ver(url)
 
     @classmethod
     def _url_ensure_trailing_slash(cls, url):
@@ -42,7 +42,7 @@ class Jurisdiction(object):
         return parse.urlunsplit(url_parts)
 
     @classmethod
-    def _get_current_ver(cls, election_url):
+    def get_current_ver(cls, election_url):
         election_url_parts = parse.urlsplit(cls._url_ensure_trailing_slash(election_url))
         if 'Web02' in election_url:
             cls.parsed_url = election_url_parts._replace(path="/".join(election_url_parts.path.split('/')[:3]) + "/current_ver.txt", fragment='')
@@ -64,7 +64,7 @@ class Jurisdiction(object):
     @classmethod
     def get_latest_summary_url(cls, election_url):
         election_url = cls._url_ensure_trailing_slash(election_url)
-        current_ver = cls._get_current_ver(election_url)
+        current_ver = cls.get_current_ver(election_url)
 
         # If we don't have current_ver, we can't determine a summary URL.
         if current_ver is None:
