@@ -30,9 +30,9 @@ Clarify's `Jurisdiction` class provides details about the jurisdiction represent
 
 ```
 >>> import clarify
->>> j = clarify.Jurisdiction(url='http://results.enr.clarityelections.com/KY/15261/30235/en/summary.html', level='state')
+>>> j = clarify.Jurisdiction(url='http://results.enr.clarityelections.com/GA/63991/184321/en/summary.html', level='state')
 >>> j.report_url('xml')
-'http://results.enr.clarityelections.com/KY/15261/30235/reports/detailxml.zip'
+'https://results.enr.clarityelections.com/GA/63991/184321/reports/detailxml.zip'
 ```
 
 The `Jurisdiction` object also provides access to any sub-jurisdiction details, including the URL of the detailed XML results, by scraping the web pages listing them:
@@ -40,9 +40,9 @@ The `Jurisdiction` object also provides access to any sub-jurisdiction details, 
 ```
 >>> subs = j.get_subjurisdictions()
 >>> subs[0].name
-'Adair'
+'Baldwin'
 >>> subs[0].report_url('xml')
-'http://results.enr.clarityelections.com/KY/Adair/15263/27401/reports/detailxml.zip'
+'https://results.enr.clarityelections.com/GA/Baldwin/63997/183266/reports/detailxml.zip'
 ```
 
 ### Parser
