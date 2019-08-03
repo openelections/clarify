@@ -216,7 +216,11 @@ class Parser(object):
             ``KeyError`` if a matching jurisdiction is not found.
 
         """
-        return self._result_jurisdiction_lookup[name]
+        try:
+            return self._result_jurisdiction_lookup[name]
+        except:
+            self.add_result_jurisdiction(name)
+            return self._result_jurisdiction_lookup[name]
 
     def _get_or_create_result_jurisdiction(self, el):
         try:
