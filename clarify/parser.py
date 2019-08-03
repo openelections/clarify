@@ -219,8 +219,11 @@ class Parser(object):
         try:
             return self._result_jurisdiction_lookup[name]
         except:
-            self.add_result_jurisdiction(name)
-            return self._result_jurisdiction_lookup[name]
+            # can we create a new element
+            new_el = etree.Element('Precinct', {'name': name})
+            parsed_el = self._parse_result_jurisdiction(new_el)
+            self.result_jurisdictions.append(parsed_el)
+            return parsed_el
 
     def _get_or_create_result_jurisdiction(self, el):
         try:
