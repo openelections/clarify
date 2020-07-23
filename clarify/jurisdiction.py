@@ -44,7 +44,7 @@ class Jurisdiction(object):
     @classmethod
     def get_current_ver(cls, election_url):
         election_url_parts = parse.urlsplit(cls._url_ensure_trailing_slash(election_url))
-        if 'Web02' in election_url:
+        if 'Web02' in election_url or 'web.' in election_url:
             cls.parsed_url = election_url_parts._replace(path="/".join(election_url_parts.path.split('/')[:3]) + "/current_ver.txt", fragment='')
             election_url_parts =  cls.parsed_url
         else:
@@ -70,7 +70,7 @@ class Jurisdiction(object):
         if current_ver is None:
             return None
 
-        if 'Web02' in election_url:
+        if 'Web02' in election_url or 'web.' in election_url:
             election_url_parts = parse.urlsplit(election_url)
             election_url_parts = election_url_parts._replace(path="/".join(election_url_parts.path.split('/')[:3]), fragment='')
         else:
@@ -107,7 +107,7 @@ class Jurisdiction(object):
         """
 
         subjurisdictions_url = self._get_subjurisdictions_url()
-        if 'Web02' in self.url:
+        if 'Web02' in self.url or 'web.' in self.url:
             json_url = self.get_latest_summary_url(self.url).replace('summary.json', 'electionsettings.json')
             try:
                 r = requests.get(json_url)
