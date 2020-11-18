@@ -405,22 +405,30 @@ class Parser(object):
 
         for vt_el in contest_el.xpath('./VoteType'):
             vote_type = vt_el.attrib['name']
+            try:
+                votes=int(vt_el.attrib['votes'])
+            except:
+                votes = vt_el.attrib['votes']
             choice.add_result(Result(
                 contest=contest,
                 vote_type=vote_type,
                 jurisdiction=None,
-                votes=int(vt_el.attrib['votes']),
+                votes=votes,
                 choice=choice
             ))
 
             for subjurisdiction_el in vt_el.xpath('./Precinct') + vt_el.xpath('./County'):
                 subjurisdiction = self.get_result_jurisdiction(subjurisdiction_el.attrib['name'])
                 subjurisdiction = self._get_or_create_result_jurisdiction(subjurisdiction_el)
+                try:
+                    votes=int(subjurisdiction_el.attrib['votes'])
+                except:
+                    votes = subjurisdiction_el.attrib['votes']
                 choice.add_result(Result(
                     contest=contest,
                     vote_type=vote_type,
                     jurisdiction=subjurisdiction,
-                    votes=int(subjurisdiction_el.attrib['votes']),
+                    votes=votes,
                     choice=choice
                 ))
 
