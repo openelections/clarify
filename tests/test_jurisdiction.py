@@ -166,10 +166,53 @@ def mock_subjurisdiction_redirect_page_meta(page_id):
 
 
 class TestJurisdiction(TestCase):
+    # Test the constructor
     def test_construct(self):
+        """
+        A Jurisdiction with a valid, supported URL and level string should create a class instance and not raise an Exception.
+        """
         url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
         jurisdiction = Jurisdiction(url=url, level='state')
         self.assertEqual(jurisdiction.url, url)
+
+    def test_construct_invalid_url_type(self):
+        """
+        A Jurisdiction with an invalid URL data type should raise an Exception.
+        """
+        with self.assertRaises(Exception):
+            Jurisdiction(url=None, level='state')
+
+    def test_construct_invalid_url(self):
+        """
+        A Jurisdiction with an invalid URL should raise an Exception.
+        """
+        with self.assertRaises(Exception):
+            Jurisdiction(url='foo', level='state')
+
+    def test_construct_invalid_hostname(self):
+        """
+        A Jurisdiction with an unsupported hostname in the URL should raise an Exception.
+        """
+        url = 'https://bad.hostname/KY/15261/30235/en/summary.html'
+        with self.assertRaises(Exception):
+            Jurisdiction(url=url, level='state')
+
+    def test_construct_no_level(self):
+        """
+        A Jurisdiction with a valid, supported hostname but no level in the URL should raise an Exception.
+        """
+        url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
+        with self.assertRaises(Exception):
+            Jurisdiction(url=url)
+
+    def test_construct_invalid_level_str(self):
+        """
+        A Jurisdiction with a valid, supported hostname but an invalid level in the URL should raise an Exception.
+        """
+        url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
+        with self.assertRaises(Exception):
+            Jurisdiction(url=url, level='foo')
+
 
     @responses.activate
     def test_get_subjurisdictions_state(self):
