@@ -145,6 +145,19 @@ COUNTY_REDIRECT_URL_RE = re.compile(r'https://results.enr.clarityelections.com/(
 COUNTY_URL_RE = re.compile(r'https://results.enr.clarityelections.com/(?P<state>[A-Z]{2})/(?P<county>[A-Za-z\.]+)/(?P<page_id>\d+)/(?P<page_id_2>\d+)/')
 
 
+# non-string object which has a type(str(Stringlike)) === str
+class Stringlike(object):
+    def __init__(self, url):
+        self.url = url
+    def __str__(self):
+        return self.url
+
+# non-string object which has a type(str(Stringlike)) !== str
+class NotStringlike(object):
+    def __init__(self, url):
+        # do something but don't implement __str__ and don't store url
+        self.noturl = 'noturl'
+
 def mock_county_response_callback(req):
     m = COUNTY_REDIRECT_URL_RE.match(req.url)
     assert m is not None
@@ -175,26 +188,59 @@ class TestJurisdiction(TestCase):
         jurisdiction = Jurisdiction(url=url, level='state')
         self.assertEqual(jurisdiction.url, url)
 
+    def test_construct_valid_county(self):
+        """
+        A Jurisdiction with a valid, supported URL and level string should create a class instance and not raise an Exception.
+        """
+        url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='county')
+        self.assertEqual(jurisdiction.url, url)
+
+    def test_construct_valid_city(self):
+        """
+        A Jurisdiction with a valid, supported URL and level string should create a class instance and not raise an Exception.
+        """
+        url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='city')
+        self.assertEqual(jurisdiction.url, url)
+
+    def test_construct_valid_precinct(self):
+        """
+        A Jurisdiction with a valid, supported URL and level string should create a class instance and not raise an Exception.
+        """
+        url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
+        jurisdiction = Jurisdiction(url=url, level='precinct')
+        self.assertEqual(jurisdiction.url, url)
+
+    def test_construct_valid_url_stringlike(self):
+        """
+        A Jurisdiction with a valid, supported URL and level string should create a class instance and not raise an Exception.
+        """
+        url = Stringlike('https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html')
+        jurisdiction = Jurisdiction(url=url, level='state')
+        self.assertEqual(jurisdiction.url, str(url))
+
+    def test_construct_invalid_url_notstringlike(self):
+        """
+        A Jurisdiction with a valid, supported URL and level string should raise a TypeError.
+        """
+        url = NotStringlike('https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html')
+        with self.assertRaises(ValueError):
+            Jurisdiction(url=url, level='state')
+
     def test_construct_invalid_url_type(self):
         """
         A Jurisdiction with an invalid URL data type should raise an Exception.
         """
-        with self.assertRaises(Exception):
+        with self.assertRaises(TypeError):
             Jurisdiction(url=None, level='state')
-
-    def test_construct_invalid_url(self):
-        """
-        A Jurisdiction with an invalid URL should raise an Exception.
-        """
-        with self.assertRaises(Exception):
-            Jurisdiction(url='foo', level='state')
 
     def test_construct_invalid_hostname(self):
         """
         A Jurisdiction with an unsupported hostname in the URL should raise an Exception.
         """
         url = 'https://bad.hostname/KY/15261/30235/en/summary.html'
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValueError):
             Jurisdiction(url=url, level='state')
 
     def test_construct_no_level(self):
@@ -202,7 +248,7 @@ class TestJurisdiction(TestCase):
         A Jurisdiction with a valid, supported hostname but no level in the URL should raise an Exception.
         """
         url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
-        with self.assertRaises(Exception):
+        with self.assertRaises(TypeError):
             Jurisdiction(url=url)
 
     def test_construct_invalid_level_str(self):
@@ -210,7 +256,7 @@ class TestJurisdiction(TestCase):
         A Jurisdiction with a valid, supported hostname but an invalid level in the URL should raise an Exception.
         """
         url = 'https://results.enr.clarityelections.com/KY/15261/30235/en/summary.html'
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValueError):
             Jurisdiction(url=url, level='foo')
 
 
