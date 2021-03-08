@@ -32,6 +32,10 @@ class Jurisdiction(object):
         try:
             # Attempt to convert to str
             url = str(url)
+        except TypeError as type_error:
+            raise type_error
+        except ValueError as value_error:
+            raise value_error
         except Exception as error:
             # If converting to str failed, raise type error
             raise TypeError('Invalid url parameter')
