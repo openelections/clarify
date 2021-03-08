@@ -51,7 +51,9 @@ class Jurisdiction(object):
     def get_current_ver(cls, election_url):
         election_url_parts = parse.urlsplit(cls._url_ensure_trailing_slash(election_url))
         base_url_matches = BASE_URL_REGEX.match(election_url_parts.path)
-        base_uri = base_url_matches.group('base_uri') if base_url_matches else None
+        if not base_url_matches:
+            return None
+        base_uri = base_url_matches.group('base_uri')
         # possible version filenames
         possible_filenames = ['/current_ver.txt']
         ret = None
