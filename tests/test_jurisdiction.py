@@ -136,7 +136,7 @@ COUNTIES_AR = [
 ]
 
 # IDs for county pages that ultimately resolve from
-# http://results.enr.clarityelections.com/KY/50972/131636/en/select-county.html
+# https://results.enr.clarityelections.com/KY/50972/131636/en/select-county.html
 # Seem to start at 129035 and increment by 1
 COUNTY_IDS_PAIRS = {i: c for i, c in enumerate(COUNTIES_AR, start=129035)}
 
@@ -279,7 +279,7 @@ class TestJurisdiction(TestCase):
                       content_type='text/html')
 
         # Mock responses to URLs like
-        # http://results.enr.clarityelections.com/KY/Adair/50974/
+        # https://results.enr.clarityelections.com/KY/Adair/50974/
         responses.add_callback(
             responses.GET,
             COUNTY_REDIRECT_URL_RE,
@@ -452,7 +452,7 @@ class TestJurisdiction(TestCase):
             "https://results.enr.clarityelections.com/CO/63746/",
             "https://results.enr.clarityelections.com/CO/Boulder/43040/",
             "https://results.enr.clarityelections.com/CO/Bogus/43040/",
-            "http://results.enr.clarityelections.com/AR/75879/",
+            "https://results.enr.clarityelections.com/AR/75879/",
         ]
         expected_urls = [
             "https://results.enr.clarityelections.com/CO/63746/184388/Web01/en/summary.html",
