@@ -92,7 +92,7 @@ class Jurisdiction(object):
             if ret == None:
                 election_url_parts = election_url_parts._replace(path=base_uri + filename)
                 current_ver_url = parse.urlunsplit(election_url_parts)
-                current_ver_response = requests.get(current_ver_url)
+                current_ver_response = requests.get(current_ver_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
                 try:
                     current_ver_response.raise_for_status()
                     ret = current_ver_response.text
@@ -126,7 +126,7 @@ class Jurisdiction(object):
 
             latest_summary_url = parse.urlunsplit(latest_summary_url_parts)
 
-            latest_summary_url_response = requests.get(latest_summary_url)
+            latest_summary_url_response = requests.get(latest_summary_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
 
             try:
                 latest_summary_url_response.raise_for_status()
@@ -149,7 +149,7 @@ class Jurisdiction(object):
         if 'Web02' in self.url or 'web.' in self.url:
             json_url = self.get_latest_summary_url(self.url).replace('summary.json', 'electionsettings.json')
             try:
-                r = requests.get(json_url)
+                r = requests.get(json_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
                 r.raise_for_status()
                 jurisdictions = []
                 counties = r.json()['settings']['electiondetails']['participatingcounties']
@@ -160,7 +160,7 @@ class Jurisdiction(object):
         elif not subjurisdictions_url:
             json_url = self.url.replace('summary.html', 'json/electionsettings.json')
             try:
-                r = requests.get(json_url)
+                r = requests.get(json_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
                 r.raise_for_status()
                 jurisdictions = []
                 counties = r.json()['settings']['electiondetails']['participatingcounties']
@@ -169,7 +169,7 @@ class Jurisdiction(object):
             except requests.exceptions.HTTPError:
                 json_url = self.url.replace('summary.html', 'json/en/electionsettings.json')
                 try:
-                    r = requests.get(json_url)
+                    r = requests.get(json_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
                     r.raise_for_status()
                     jurisdictions = []
                     counties = r.json()['settings']['electiondetails']['participatingcounties']
@@ -178,7 +178,7 @@ class Jurisdiction(object):
                 except requests.exceptions.HTTPError:
                     return []
         try:
-            r = requests.get(subjurisdictions_url)
+            r = requests.get(subjurisdictions_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
             r.raise_for_status()
 
             # Use a maximum of 10 workers.  Should we parameterize this?
@@ -298,7 +298,7 @@ class Jurisdiction(object):
         Returns link to detailed report depending on format. Formats are xls, txt and xml.
         """
         url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
-        r = requests.get(url)
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
         if r.status_code == 200:
             return url
         else:
@@ -309,7 +309,7 @@ class Jurisdiction(object):
         Returns the summary report URL for a jurisdiction.
         """
         url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"
-        r = requests.get(url)
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
         if r.status_code == 200:
             return url
         else:
