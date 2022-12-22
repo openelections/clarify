@@ -294,6 +294,9 @@ class TestJurisdiction(TestCase):
             "https://results.enr.clarityelections.com/KY/50972/131636/reports/summary.zip",
             status=200,
         )
+        responses.add(responses.GET, 'https://results.enr.clarityelections.com/KY/50972/current_ver.txt',
+                      body='131636', status=200,
+                      content_type='text/plain')
 
         jurisdiction = Jurisdiction(url=url, level='state')
         jurisdictions = jurisdiction.get_subjurisdictions()
@@ -359,6 +362,9 @@ class TestJurisdiction(TestCase):
             url=re.compile(r"^https://results.enr.clarityelections.com/AR/(.+/[0-9]+/[0-9]+/Web01/en/summary.html|(.+/)?[0-9]+/[0-9]+/reports/summary.zip)$"),
             status=200,
         )
+        responses.add(responses.GET, re.compile(r'^https://results.enr.clarityelections.com/[A-Z]{2,2}/([A-Za-z_.]+/)?[0-9]+/current_ver.txt'),
+                      body='12345', status=200,
+                      content_type='text/plain')
 
         # Construct a Jurisdiction for Arkansas 2014 General Election
         url = "https://results.enr.clarityelections.com/AR/53237/149294/Web01/en/summary.html"
@@ -424,28 +430,71 @@ class TestJurisdiction(TestCase):
         self.assertEqual(Jurisdiction._url_ensure_trailing_slash(url_with), url_with)
         self.assertEqual(Jurisdiction._url_ensure_trailing_slash(url_without), url_with)
 
-    def test_get_current_ver(self):
-        election_urls = [
-            "https://results.enr.clarityelections.com/CO/63746/",
-            "https://results.enr.clarityelections.com/CO/Boulder/43040/",
-            "https://results.enr.clarityelections.com/CO/Bogus/43040/",
-            "https://results.enr.clarityelections.com/AR/75879/",
-        ]
-        expected_current_vers = [
-            "184388",
-            "114182",
-            None,
-            "208723",
-        ]
+    @responses.activate
+    def test_get_current_ver_state_web01_1st(self):
+        """
+        A state jurisdiction with Web01 in url should find the current version at the expected URL
+        """
+        responses.add(responses.GET, re.compile(r'^https://results.enr.clarityelections.com/[A-Z]{2,2}/([A-Za-z_.]+/)?[0-9]+/current_ver.txt'),
+                      body='184388', status=200,
+                      content_type='text/plain')
+        current_ver = Jurisdiction.get_current_ver("https://results.enr.clarityelections.com/CO/63746/")
+        self.assertEqual(current_ver, "184388")
 
-        for (election_url, expected_current_ver) in dict(zip(election_urls, expected_current_vers)).items():
-            with self.subTest(election_url=election_url, expected_current_ver=expected_current_ver):
-                current_ver = Jurisdiction.get_current_ver(election_url)
+    @responses.activate
+    def test_get_current_ver_state_web01_2nd(self):
+        """
+        A state jurisdiction with Web01 in url should find the current version at the expected URL
+        """
+        responses.add(responses.GET, re.compile(r'^https://results.enr.clarityelections.com/[A-Z]{2,2}/([A-Za-z_.]+/)?[0-9]+/current_ver.txt'),
+                      body='149292', status=200,
+                      content_type='text/plain')
+        current_ver = Jurisdiction.get_current_ver("https://results.enr.clarityelections.com/AR/Arkansas/53239/")
+        self.assertEqual(current_ver, "149292")
 
-                if expected_current_ver is None:
-                    self.assertIsNone(current_ver)
-                else:
-                    self.assertEqual(current_ver, expected_current_ver)
+    @responses.activate
+    def test_get_current_ver_state_web02(self):
+        """
+        A state jurisdiction with Web02 in url should find the current version at the expected URL
+        """
+        responses.add(responses.GET, re.compile(r'^https://results.enr.clarityelections.com/[A-Z]{2,2}/([A-Za-z_.]+/)?[0-9]+/current_ver.txt'),
+                      body='208723', status=200,
+                      content_type='text/plain')
+        current_ver = Jurisdiction.get_current_ver("https://results.enr.clarityelections.com/AR/75879/")
+        self.assertEqual(current_ver, "208723")
+
+    @responses.activate
+    def test_get_current_ver_county_legacy(self):
+        """
+        A county jurisdiction with legacy in url should find the current version at the expected URL
+        """
+        responses.add(responses.GET, re.compile(r'^https://results.enr.clarityelections.com/[A-Z]{2,2}/([A-Za-z_.]+/)?[0-9]+/current_ver.txt'),
+                      body='114182', status=200,
+                      content_type='text/plain')
+        current_ver = Jurisdiction.get_current_ver("https://results.enr.clarityelections.com/CO/Boulder/43040/")
+        self.assertEqual(current_ver, "114182")
+
+    @responses.activate
+    def test_get_current_ver_state_bogus(self):
+        """
+        A non-existant state jurisdiction should return None from get_current_ver 
+        """
+        responses.add(responses.GET, re.compile(r'^https://results.enr.clarityelections.com/BG/[0-9]+/(current_ver|cur_version).txt'),
+                      body='', status=404,
+                      content_type='text/plain')
+        current_ver = Jurisdiction.get_current_ver("https://results.enr.clarityelections.com/BG/12345/")
+        self.assertIsNone(current_ver)
+
+    @responses.activate
+    def test_get_current_ver_county_bogus(self):
+        """
+        A non-existant county jurisdiction should return None from get_current_ver 
+        """
+        responses.add(responses.GET, re.compile(r'^https://results.enr.clarityelections.com/[A-Z]{2,2}/Bogus/[0-9]+/(current_ver|cur_version).txt'),
+                      body='', status=404,
+                      content_type='text/plain')
+        current_ver = Jurisdiction.get_current_ver("https://results.enr.clarityelections.com/CO/Bogus/43040/")
+        self.assertIsNone(current_ver)
 
     def test_get_latest_summary_url(self):
         election_urls = [
@@ -458,7 +507,7 @@ class TestJurisdiction(TestCase):
             "https://results.enr.clarityelections.com/CO/63746/184388/Web01/en/summary.html",
             "https://results.enr.clarityelections.com/CO/Boulder/43040/114182/en/summary.html",
             None,
-            None,  # TODO: This uses new-style summary pages.
+            "https://results.enr.clarityelections.com/AR/75879//208723/json/en/summary.json", # exact URL generated, not most desirable
         ]
 
         for (election_url, expected_url) in dict(zip(election_urls, expected_urls)).items():

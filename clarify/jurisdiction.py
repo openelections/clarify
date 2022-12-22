@@ -2,14 +2,19 @@ import concurrent.futures
 
 from six.moves.urllib import parse
 
+import re
 import requests
 from requests_futures.sessions import FuturesSession
 import lxml.html
 from lxml.cssselect import CSSSelector
 
+# base_uri is the path prefix including the folloing named groups:
+# - state_id (required)
+# - jurisdiction_name (optional) -- the city/county/precinct name, with URL-safe whitespace
+# - election_id (required)
+BASE_URL_REGEX = re.compile(r'^(?P<base_uri>/(?P<state_id>[A-Z]{2,2})/((?P<jurisdiction_name>[A-Za-z_.]+)/)?(?P<election_id>[0-9]+))/')
 CLARITY_RESULTS_HOSTNAME = "results.enr.clarityelections.com"
 SUPPORTED_LEVELS = ['state', 'county', 'city', 'precinct']
-
 
 class Jurisdiction(object):
 
@@ -75,22 +80,25 @@ class Jurisdiction(object):
     @classmethod
     def get_current_ver(cls, election_url):
         election_url_parts = parse.urlsplit(cls._url_ensure_trailing_slash(election_url))
-        if 'Web02' in election_url or 'web.' in election_url:
-            cls.parsed_url = election_url_parts._replace(path="/".join(election_url_parts.path.split('/')[:3]) + "/current_ver.txt", fragment='')
-            election_url_parts =  cls.parsed_url
-        else:
-            election_url_parts = election_url_parts._replace(path=election_url_parts.path + "current_ver.txt")
-
-        current_ver_url = parse.urlunsplit(election_url_parts)
-
-        current_ver_response = requests.get(current_ver_url)
-
-        try:
-            current_ver_response.raise_for_status()
-        except requests.exceptions.HTTPError:
+        base_url_matches = BASE_URL_REGEX.match(election_url_parts.path)
+        if not base_url_matches:
             return None
-
-        return current_ver_response.text
+        base_uri = base_url_matches.group('base_uri')
+        # possible version filenames
+        possible_filenames = ['/current_ver.txt']
+        ret = None
+        for filename in possible_filenames:
+            # if we have already seen a 200-status response
+            if ret == None:
+                election_url_parts = election_url_parts._replace(path=base_uri + filename)
+                current_ver_url = parse.urlunsplit(election_url_parts)
+                current_ver_response = requests.get(current_ver_url)
+                try:
+                    current_ver_response.raise_for_status()
+                    ret = current_ver_response.text
+                except requests.exceptions.HTTPError:
+                    ret = None
+        return ret
 
     @classmethod
     def get_latest_summary_url(cls, election_url):
