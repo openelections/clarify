@@ -13,6 +13,8 @@ from lxml.cssselect import CSSSelector
 # - jurisdiction_name (optional) -- the city/county/precinct name, with URL-safe whitespace
 # - election_id (required)
 BASE_URL_REGEX = re.compile(r'^(?P<base_uri>/(?P<state_id>[A-Z]{2,2})/((?P<jurisdiction_name>[A-Za-z_.]+)/)?(?P<election_id>[0-9]+))/')
+CLARITY_RESULTS_HOSTNAME = "results.enr.clarityelections.com"
+SUPPORTED_LEVELS = ['state', 'county', 'city', 'precinct']
 
 class Jurisdiction(object):
 
@@ -26,12 +28,40 @@ class Jurisdiction(object):
         """
         To create an instance, pass a Clarity results URL for the top-level
         political jurisdiction (a state, for example), and the corresponding
-        level in lowercase ("state" or "county").
+        level in lowercase ("state", "county", "city", or "precinct").
         """
 
+        # Preliminary check for any type which is not string-like
+        if url == None:
+            raise TypeError('Invalid url parameter')
+        try:
+            # Attempt to convert to str
+            url = str(url)
+        except TypeError as type_error:
+            raise type_error
+        except ValueError as value_error:
+            raise value_error
+        except Exception as error:
+            # If converting to str failed, raise type error
+            raise TypeError('Invalid url parameter')
+        if type(url) != str:
+            raise TypeError('Invalid url parameter')
+        # if url is an HTTP URL to Clarity Election Results
+        if len(url) >= 40 and url[0:40] == 'http://' + CLARITY_RESULTS_HOSTNAME + '/':
+            # Replace HTTP with HTTPS; retain the string after the URL origin
+            url = 'https://' + CLARITY_RESULTS_HOSTNAME + '/' + url[40]
+        # if url is not in the allowed list of supported origins
+        if len(url) < 41 or url[0:41] != 'https://' + CLARITY_RESULTS_HOSTNAME + '/':
+            raise ValueError('Unsupported url origin')
         self.url = url
         self.parsed_url = self._parse_url()
         self.state = self._get_state_from_url()
+
+        if type(level) != str:
+            raise TypeError('Invalid level parameter')
+        level = level.lower()
+        if level not in SUPPORTED_LEVELS:
+            raise ValueError('Unsupported level')
         self.level = level
         self.name = name
         self.summary_url = self._get_summary_url()
