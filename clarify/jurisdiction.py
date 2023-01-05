@@ -13,7 +13,7 @@ from lxml.cssselect import CSSSelector
 # - jurisdiction_name (optional) -- the city/county/precinct name, with URL-safe whitespace
 # - election_id (required)
 BASE_URL_REGEX = re.compile(r'^(?P<base_uri>/(?P<state_id>[A-Z]{2,2})/((?P<jurisdiction_name>[A-Za-z_.]+)/)?(?P<election_id>[0-9]+))/')
-CLARITY_RESULTS_HOSTNAME = "results.enr.clarityelections.com"
+CLARITY_RESULTS_HOSTNAMES = ["results.enr.clarityelections.com", "www.enr-scvotes.org", "electionresults.iowa.gov"]
 SUPPORTED_LEVELS = ['state', 'county', 'city', 'precinct']
 
 class Jurisdiction(object):
@@ -47,11 +47,7 @@ class Jurisdiction(object):
         if type(url) != str:
             raise TypeError('Invalid url parameter')
         # if url is an HTTP URL to Clarity Election Results
-        if len(url) >= 40 and url[0:40] == 'http://' + CLARITY_RESULTS_HOSTNAME + '/':
-            # Replace HTTP with HTTPS; retain the string after the URL origin
-            url = 'https://' + CLARITY_RESULTS_HOSTNAME + '/' + url[40]
-        # if url is not in the allowed list of supported origins
-        if len(url) < 41 or url[0:41] != 'https://' + CLARITY_RESULTS_HOSTNAME + '/':
+        if len([url for host in CLARITY_RESULTS_HOSTNAMES if(host in url)]) == 0:
             raise ValueError('Unsupported url origin')
         self.url = url
         self.parsed_url = self._parse_url()
