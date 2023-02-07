@@ -15,6 +15,10 @@ from lxml.cssselect import CSSSelector
 BASE_URL_REGEX = re.compile(r'^(?P<base_uri>/(?P<state_id>[A-Z]{2,2})/((?P<jurisdiction_name>[A-Za-z_.]+)/)?(?P<election_id>[0-9]+))/')
 CLARITY_RESULTS_HOSTNAMES = ["results.enr.clarityelections.com", "www.enr-scvotes.org", "electionresults.iowa.gov"]
 SUPPORTED_LEVELS = ['state', 'county', 'city', 'precinct']
+UA_HEADER = {
+    "User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"
+}
+
 
 class Jurisdiction(object):
 
@@ -88,7 +92,7 @@ class Jurisdiction(object):
             if ret == None:
                 election_url_parts = election_url_parts._replace(path=base_uri + filename)
                 current_ver_url = parse.urlunsplit(election_url_parts)
-                current_ver_response = requests.get(current_ver_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+                current_ver_response = requests.get(current_ver_url, headers=UA_HEADER)
                 try:
                     current_ver_response.raise_for_status()
                     ret = current_ver_response.text
@@ -122,7 +126,7 @@ class Jurisdiction(object):
 
             latest_summary_url = parse.urlunsplit(latest_summary_url_parts)
 
-            latest_summary_url_response = requests.get(latest_summary_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+            latest_summary_url_response = requests.get(latest_summary_url, headers=UA_HEADER)
 
             try:
                 latest_summary_url_response.raise_for_status()
@@ -145,7 +149,7 @@ class Jurisdiction(object):
         if 'Web02' in self.url or 'web.' in self.url:
             json_url = self.get_latest_summary_url(self.url).replace('summary.json', 'electionsettings.json')
             try:
-                r = requests.get(json_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+                r = requests.get(json_url, headers=UA_HEADER)
                 r.raise_for_status()
                 jurisdictions = []
                 counties = r.json()['settings']['electiondetails']['participatingcounties']
@@ -156,7 +160,7 @@ class Jurisdiction(object):
         elif not subjurisdictions_url:
             json_url = self.url.replace('summary.html', 'json/electionsettings.json')
             try:
-                r = requests.get(json_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+                r = requests.get(json_url, headers=UA_HEADER)
                 r.raise_for_status()
                 jurisdictions = []
                 counties = r.json()['settings']['electiondetails']['participatingcounties']
@@ -165,7 +169,7 @@ class Jurisdiction(object):
             except requests.exceptions.HTTPError:
                 json_url = self.url.replace('summary.html', 'json/en/electionsettings.json')
                 try:
-                    r = requests.get(json_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+                    r = requests.get(json_url, headers=UA_HEADER)
                     r.raise_for_status()
                     jurisdictions = []
                     counties = r.json()['settings']['electiondetails']['participatingcounties']
@@ -174,7 +178,7 @@ class Jurisdiction(object):
                 except requests.exceptions.HTTPError:
                     return []
         try:
-            r = requests.get(subjurisdictions_url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+            r = requests.get(subjurisdictions_url, headers=UA_HEADER)
             r.raise_for_status()
 
             # Use a maximum of 10 workers.  Should we parameterize this?
@@ -294,7 +298,7 @@ class Jurisdiction(object):
         Returns link to detailed report depending on format. Formats are xls, txt and xml.
         """
         url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
-        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+        r = requests.get(url, headers=UA_HEADER)
         if r.status_code == 200:
             return url
         else:
@@ -305,7 +309,7 @@ class Jurisdiction(object):
         Returns the summary report URL for a jurisdiction.
         """
         url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"
-        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion"})
+        r = requests.get(url, headers=UA_HEADER)
         if r.status_code == 200:
             return url
         else:
