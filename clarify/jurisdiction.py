@@ -12,7 +12,18 @@ from lxml.cssselect import CSSSelector
 # - state_id (required)
 # - jurisdiction_name (optional) -- the city/county/precinct name, with URL-safe whitespace
 # - election_id (required)
-BASE_URL_REGEX = re.compile(r'^(?P<base_uri>/(?P<state_id>[A-Z]{2,2})/((?P<jurisdiction_name>[A-Za-z_.]+)/)?(?P<election_id>[0-9]+))/')
+# - version number (optional)
+# - additional path (optional)
+BASE_URL_REGEX = re.compile(
+    r'^'
+    r'(?P<base_uri>.*)/'
+    r'(?P<state_id>[A-Z]{2,2})'
+    r'(?P<jurisdiction_name>/[A-Za-z_.]+)?'
+    r'(?P<election_id>/[0-9]+)'
+    r'(?P<version>/[0-9]+)?'
+    r'(?P<path>.*)'
+    r'$'
+)
 CLARITY_RESULTS_HOSTNAMES = ["results.enr.clarityelections.com", "www.enr-scvotes.org", "electionresults.iowa.gov"]
 SUPPORTED_LEVELS = ['state', 'county', 'city', 'precinct']
 UA_HEADER = {
@@ -54,8 +65,7 @@ class Jurisdiction(object):
         if len([url for host in CLARITY_RESULTS_HOSTNAMES if(host in url)]) == 0:
             raise ValueError('Unsupported url origin')
         self.url = url
-        self.parsed_url = self._parse_url()
-        self.state = self._get_state_from_url()
+        self.parsed_url = self._parse_url(self.url)
 
         if type(level) != str:
             raise TypeError('Invalid level parameter')
@@ -65,33 +75,35 @@ class Jurisdiction(object):
         self.level = level
         self.name = name
         self.summary_url = self._get_summary_url()
-        self.current_ver = self.get_current_ver(url)
+
+        if 'version' in self.parsed_url:
+            self.current_ver = self.parsed_url['version']
+        else:
+            self.current_ver = self.get_current_ver(url)
+            if self.current_ver:
+                self.parsed_url['version'] = self.current_ver
 
     @classmethod
-    def _url_ensure_trailing_slash(cls, url):
-        url_parts = parse.urlsplit(url)
-
-        # Ensure the incoming URL ends in a slash.
-        if not url_parts.path.endswith("/"):
-            url_parts = url_parts._replace(path=url_parts.path + "/")
-
+    def construct_url(cls, parsed_url, path, include_version=True):
+        url_parts = []
+        for key in ['base_uri', 'state_id', 'jurisdiction_name', 'election_id']:
+            if key in parsed_url:
+                url_parts.append(parsed_url[key])
+        if include_version and 'version' in parsed_url:
+            url_parts.append(parsed_url['version'])
+        url_parts.append(path)
         return parse.urlunsplit(url_parts)
 
     @classmethod
     def get_current_ver(cls, election_url):
-        election_url_parts = parse.urlsplit(cls._url_ensure_trailing_slash(election_url))
-        base_url_matches = BASE_URL_REGEX.match(election_url_parts.path)
-        if not base_url_matches:
-            return None
-        base_uri = base_url_matches.group('base_uri')
+        parsed_url = cls._parse_url(election_url)
         # possible version filenames
-        possible_filenames = ['/current_ver.txt']
+        possible_filenames = ['current_ver.txt']
         ret = None
         for filename in possible_filenames:
             # if we have already seen a 200-status response
-            if ret == None:
-                election_url_parts = election_url_parts._replace(path=base_uri + filename)
-                current_ver_url = parse.urlunsplit(election_url_parts)
+            if ret is None:
+                current_ver_url = cls.construct_url(parsed_url, filename, include_version=False)
                 current_ver_response = requests.get(current_ver_url, headers=UA_HEADER)
                 try:
                     current_ver_response.raise_for_status()
@@ -102,29 +114,22 @@ class Jurisdiction(object):
 
     @classmethod
     def get_latest_summary_url(cls, election_url):
-        election_url = cls._url_ensure_trailing_slash(election_url)
+        parsed_url = cls._parse_url(election_url)
         current_ver = cls.get_current_ver(election_url)
 
         # If we don't have current_ver, we can't determine a summary URL.
         if current_ver is None:
             return None
-
-        if 'Web02' in election_url or 'web.' in election_url:
-            election_url_parts = parse.urlsplit(election_url)
-            election_url_parts = election_url_parts._replace(path="/".join(election_url_parts.path.split('/')[:3]), fragment='')
-        else:
-            election_url_parts = parse.urlsplit(election_url)
+        parsed_url['version'] = current_ver
 
         new_paths = [
-            election_url_parts.path + '/' + current_ver + "/json/en/summary.json",
-            election_url_parts.path + current_ver + "/Web01/en/summary.html",
-            election_url_parts.path + current_ver + "/en/summary.html",
+            "json/en/summary.json",
+            "Web01/en/summary.html",
+            "en/summary.html",
         ]
 
         for new_path in new_paths:
-            latest_summary_url_parts = election_url_parts._replace(path=new_path)
-
-            latest_summary_url = parse.urlunsplit(latest_summary_url_parts)
+            latest_summary_url = cls.construct_url(parsed_url, new_path)
 
             latest_summary_url_response = requests.get(latest_summary_url, headers=UA_HEADER)
 
@@ -198,31 +203,34 @@ class Jurisdiction(object):
         except requests.exceptions.HTTPError:
             return []
 
-    def _parse_url(self):
+    @classmethod
+    def _parse_url(cls, url):
         """
         The parsed version of the original URL is used by several methods,
         so we assign it to self.parsed_url on init. If URL has "/Web01/"
         segment, that gets stripped out.
         """
-        if 'Web01/' in self.url:
-            url = self.url.replace('Web01/', '')
-        else:
-            url = self.url
-        return parse.urlsplit(url)
+        m = BASE_URL_REGEX.match(url)
+        if not m:
+            raise RuntimeError('Unable to parse ' + url)
+
+        url_params = {}
+        for k, v in m.groupdict().items():
+            if not v:
+                continue
+            if v.startswith('/'):
+                v = v[1:]
+            url_params[k] = v
+        return url_params
 
     def _get_subjurisdictions_urls_from_json(self, counties):
         subjurisdictions = []
         for c in counties:
-            name, first_id, second_id, date, fill = c.split('|')
-            url = 'https://results.enr.clarityelections.com/' + self.state + '/' + name + '/' + first_id + '/' + second_id + '/Web01/en/summary.html'
-            subjurisdictions.append(Jurisdiction(url, 'county', name))
+            new_info = dict(self.parsed_url)
+            new_info['jurisdiction_name'], new_info['election_id'], new_info['version'], date, fill = c.split('|')
+            url = self.construct_url(new_info, 'Web01/en/summary.html')
+            subjurisdictions.append(Jurisdiction(url, 'county', new_info['jurisdiction_name']))
         return subjurisdictions
-
-    def _get_state_from_url(self):
-        """
-        Returns the two-digit state abbreviation from the URL.
-        """
-        return self.parsed_url.path.split('/')[1]
 
     def _get_subjurisdictions_url(self):
         """
@@ -235,15 +243,8 @@ class Jurisdiction(object):
         elif 'Web01/' in self.url:
             return None
         else:
-            newpath = '/'.join(self.parsed_url.path.split('/')[:-1]) + '/select-county.html'
-            parts = (
-                self.parsed_url.scheme,
-                self.parsed_url.netloc,
-                newpath,
-                self.parsed_url.query,
-                self.parsed_url.fragment,
-            )
-            return parse.urlunsplit(parts)
+            language = self.parsed_url['path'].split('/')[0]
+            return self.construct_url(self.parsed_url, language + '/select-county.html')
 
     def _scrape_subjurisdiction_paths(self, html):
         """
@@ -255,13 +256,15 @@ class Jurisdiction(object):
         return [(match.get('value'), match.get('id')) for match in results]
 
     def _subjurisdiction_url_future(self, session, path):
-        url = self._state_url() + "/".join(path.split('/')[:3])
+        _, subjur_name, election_id, subpath = path.split('/')
+        new_info = dict(self.parsed_url)
+        new_info['jurisdiction_name'] = subjur_name
+
         # Make sure path ends with '/'
         # While the URL without the trailing forward slash will ultimately
         # resolve to the same place, it causes a redirect which means an
         # extra request.
-        if not url.endswith('/'):
-            url = url + '/'
+        url = self.construct_url(new_info, '/', include_version=False)
         future = session.get(url)
         return future
 
@@ -272,12 +275,6 @@ class Jurisdiction(object):
         # We need to strip the trailing '/' from the URL before adding
         # the additional path
         return url.strip('/') + redirect_path
-
-    def _state_url(self):
-        """
-        Returns base URL used by _subjurisdiction_url.
-        """
-        return 'https://results.enr.clarityelections.com/' + self.state
 
     @classmethod
     def _scrape_subjurisdiction_summary_path(cls, html):
@@ -297,7 +294,7 @@ class Jurisdiction(object):
         """
         Returns link to detailed report depending on format. Formats are xls, txt and xml.
         """
-        url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/detail{}.zip".format(fmt)
+        url = self.construct_url(self.parsed_url, "reports/detail{}.zip".format(fmt))
         r = requests.get(url, headers=UA_HEADER)
         if r.status_code == 200:
             return url
@@ -308,7 +305,7 @@ class Jurisdiction(object):
         """
         Returns the summary report URL for a jurisdiction.
         """
-        url = self._state_url() + '/' + '/'.join(self.parsed_url.path.split('/')[2:-2]) + "/reports/summary.zip"
+        url = self.construct_url(self.parsed_url, "reports/summary.zip")
         r = requests.get(url, headers=UA_HEADER)
         if r.status_code == 200:
             return url
