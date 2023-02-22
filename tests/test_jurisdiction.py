@@ -380,21 +380,33 @@ class TestJurisdiction(TestCase):
 
         # TODO: Actually check the values in subjurisdictions.
 
-    def test_parsed_url_web01_stripped(self):
-        """
-        A jurisdiction with Web01 in url should have a parsed URL that
-        removes "Web01" from the URL"""
-        # Construct a Jurisdiction for Arkansas 2014 General Election
-        url = 'https://results.enr.clarityelections.com/AR/53237/149294/Web01/en/summary.html'
-        jurisdiction = Jurisdiction(url=url, level='state')
-        self.assertNotIn('Web01', jurisdiction.parsed_url.path)
-
     def test_report_url_xml(self):
-        # Construct a Jurisdiction for Appling County, GA 2014 Primary Election
-        url = 'https://results.enr.clarityelections.com/GA/Appling/52178/139522/en/summary.html'
-        jurisdiction = Jurisdiction(url=url, level='county')
-        expected_url = 'https://results.enr.clarityelections.com/GA/Appling/52178/139522/reports/detailxml.zip'
-        self.assertEqual(jurisdiction.report_url('xml'), expected_url)
+        election_urls = [
+            'https://results.enr.clarityelections.com/GA/Appling/52178/139522/en/summary.html',
+            "https://results.enr.clarityelections.com/CO/63746/",
+            "https://results.enr.clarityelections.com/CO/Boulder/43040/",
+            "https://results.enr.clarityelections.com/CO/Bogus/43040/",
+            "https://results.enr.clarityelections.com/AR/75879/",
+            "https://results.enr.clarityelections.com/PA/Allegheny/115752"
+        ]
+        expected_urls = [
+            'https://results.enr.clarityelections.com/GA/Appling/52178/139522/reports/detailxml.zip',
+            "https://results.enr.clarityelections.com/CO/63746/184388/reports/detailxml.zip",
+            None,  # Xml report not available
+            None,  # Bogus county
+            "https://results.enr.clarityelections.com/AR/75879/208723/reports/detailxml.zip",
+            "https://results.enr.clarityelections.com/PA/Allegheny/115752/316097/reports/detailxml.zip"
+        ]
+
+        for (election_url, expected_url) in dict(zip(election_urls, expected_urls)).items():
+            with self.subTest(election_url=election_url, expected_url=expected_url):
+                jurisdiction = Jurisdiction(url=election_url, level='county')
+                report_url = jurisdiction.report_url('xml')
+
+                if expected_url is None:
+                    self.assertIsNone(report_url)
+                else:
+                    self.assertEqual(report_url, expected_url)
 
     def test_report_url_txt(self):
         # Construct a Jurisdiction for Kentucky 2010 Primary Election
@@ -422,13 +434,6 @@ class TestJurisdiction(TestCase):
         jurisdiction = Jurisdiction(url=url, level='state')
         expected_url = 'https://results.enr.clarityelections.com/CO/53335/149144/reports/summary.zip'
         self.assertEqual(jurisdiction.summary_url, expected_url)
-
-    def test__url_ensure_trailing_slash(self):
-        url_with = "https://results.enr.clarityelections.com/CO/63746/"
-        url_without = "https://results.enr.clarityelections.com/CO/63746"
-
-        self.assertEqual(Jurisdiction._url_ensure_trailing_slash(url_with), url_with)
-        self.assertEqual(Jurisdiction._url_ensure_trailing_slash(url_without), url_with)
 
     @responses.activate
     def test_get_current_ver_state_web01_1st(self):
@@ -502,12 +507,14 @@ class TestJurisdiction(TestCase):
             "https://results.enr.clarityelections.com/CO/Boulder/43040/",
             "https://results.enr.clarityelections.com/CO/Bogus/43040/",
             "https://results.enr.clarityelections.com/AR/75879/",
+            "https://results.enr.clarityelections.com/PA/Allegheny/115752"
         ]
         expected_urls = [
             "https://results.enr.clarityelections.com/CO/63746/184388/Web01/en/summary.html",
             "https://results.enr.clarityelections.com/CO/Boulder/43040/114182/en/summary.html",
             None,
-            "https://results.enr.clarityelections.com/AR/75879//208723/json/en/summary.json", # exact URL generated, not most desirable
+            "https://results.enr.clarityelections.com/AR/75879/208723/json/en/summary.json",
+            "https://results.enr.clarityelections.com/PA/Allegheny/115752/316097/json/en/summary.json"
         ]
 
         for (election_url, expected_url) in dict(zip(election_urls, expected_urls)).items():
