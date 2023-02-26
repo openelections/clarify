@@ -4,6 +4,7 @@ import re
 
 import dateutil.parser
 from lxml import etree
+import zipfile
 
 
 class Parser(object):
@@ -36,7 +37,10 @@ class Parser(object):
                report file to be parsed.
 
         """
-        tree = etree.parse(f)
+        if f[0] == '<':
+            tree = etree.fromstring(f)
+        else:
+            tree = etree.parse(f)
         election_voter_turnout = self._parse_election_voter_turnout(tree)
         self.timestamp = self._parse_timestamp(tree)
         self.election_name = self._parse_election_name(tree)
@@ -50,6 +54,12 @@ class Parser(object):
         self._result_jurisdiction_lookup = {j.name: j for j in self._result_jurisdictions}
         self._contests = self._parse_contests(tree)
         self._contest_lookup = {c.text: c for c in self._contests}
+
+    def parse_zip(self, zip_path):
+        with zipfile.ZipFile(zip_path, mode='r') as archive:
+            assert archive.namelist() == ['detail.xml']
+            contents = archive.read('detail.xml').decode()
+            self.parse(contents)
 
     def _parse_timestamp(self, tree):
         """
