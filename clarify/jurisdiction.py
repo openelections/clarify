@@ -290,16 +290,31 @@ class Jurisdiction(object):
             segment = tree.xpath("//script")[0].values()[0].split('/')[1]
         return '/' + segment + '/en/summary.html'
 
+    def _get_report_url(self, fmt):
+        """
+        Return the url for the report in a given format without checking to see if it is valid.
+        """
+        return self.construct_url(self.parsed_url, "reports/detail{}.zip".format(fmt))
+
     def report_url(self, fmt):
         """
         Returns link to detailed report depending on format. Formats are xls, txt and xml.
         """
-        url = self.construct_url(self.parsed_url, "reports/detail{}.zip".format(fmt))
+        url = self._get_report_url(fmt)
         r = requests.get(url, headers=UA_HEADER)
         if r.status_code == 200:
             return url
         else:
             return None
+
+    def download_report(self, fmt, output_fn):
+        """
+        Downloads the selected report and saves it with the given output filename.
+        """
+        url = self._get_report_url(fmt)
+        r = requests.get(url, headers=UA_HEADER)
+        with open(output_fn, 'wb') as f:
+            f.write(r.content)
 
     def _get_summary_url(self):
         """
