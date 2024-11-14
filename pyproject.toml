@@ -8,8 +8,6 @@ version = "0.5.0.dev0"
 dependencies = [
     "requests",
     "cssselect",
-    "futures",
     "requests-futures",
-    "six",
     "wheel"
 ]

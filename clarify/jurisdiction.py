@@ -1,6 +1,6 @@
 import concurrent.futures
 
-from six.moves.urllib import parse
+from urllib import parse
 
 import re
 import requests
