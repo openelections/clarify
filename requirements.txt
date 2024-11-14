@@ -3,3 +3,4 @@ python-dateutil==2.4.2
 requests>=2.20.0
 requests-futures==0.9.5
 wheel==0.24.0
+lxml>=4.9.0
