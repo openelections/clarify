@@ -85,14 +85,16 @@ class Jurisdiction(object):
 
     @classmethod
     def construct_url(cls, parsed_url, path, include_version=True):
-        url_parts = []
-        for key in ['base_uri', 'state_id', 'jurisdiction_name', 'election_id']:
-            if key in parsed_url:
-                url_parts.append(parsed_url[key])
-        if include_version and 'version' in parsed_url:
-            url_parts.append(parsed_url['version'])
-        url_parts.append(path)
-        return parse.urlunsplit(url_parts)
+        # Build URL manually to avoid urlunsplit issues
+        url = parsed_url['base_uri']
+        url += '/' + parsed_url['state_id']
+        if 'jurisdiction_name' in parsed_url and parsed_url['jurisdiction_name']:
+            url += '/' + parsed_url['jurisdiction_name']
+        url += '/' + parsed_url['election_id']
+        if include_version and 'version' in parsed_url and parsed_url['version']:
+            url += '/' + parsed_url['version']
+        url += '/' + path
+        return url
 
     @classmethod
     def get_current_ver(cls, election_url):
@@ -226,10 +228,16 @@ class Jurisdiction(object):
     def _get_subjurisdictions_urls_from_json(self, counties):
         subjurisdictions = []
         for c in counties:
-            new_info = dict(self.parsed_url)
-            new_info['jurisdiction_name'], new_info['election_id'], new_info['version'], date, fill = c.split('|')
-            url = self.construct_url(new_info, 'Web01/en/summary.html')
-            subjurisdictions.append(Jurisdiction(url, 'county', new_info['jurisdiction_name']))
+            # Split the county data, but handle varying number of fields
+            parts = c.split('|')
+            if len(parts) >= 3:
+                new_info = dict(self.parsed_url)
+                new_info['jurisdiction_name'] = parts[0]
+                new_info['election_id'] = parts[1]
+                new_info['version'] = parts[2]
+                # parts[3] might be date, parts[4] might be fill - ignore extras
+                url = self.construct_url(new_info, 'Web01/en/summary.html')
+                subjurisdictions.append(Jurisdiction(url, 'county', new_info['jurisdiction_name']))
         return subjurisdictions
 
     def _get_subjurisdictions_url(self):
@@ -285,8 +293,12 @@ class Jurisdiction(object):
         """
         tree = lxml.html.fromstring(html)
         try:
-            segment = tree.xpath("//meta[@content]")[0].values()[1].split("=")[1].split('/')[1]
+            # Try to get from meta tag first
+            meta_element = tree.xpath("//meta[@content]")[0]
+            content_value = meta_element.get('content')
+            segment = content_value.split("=")[1].split('/')[1]
         except (IndexError, AttributeError):
+            # Fall back to script tag method
             segment = tree.xpath("//script")[0].values()[0].split('/')[1]
         return '/' + segment + '/en/summary.html'
 

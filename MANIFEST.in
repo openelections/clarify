@@ -1,1 +1,6 @@
-include *.md *.rst LICENSE.txt
+include *.md *.rst *.txt LICENSE.txt
+include clarify/version.py
+recursive-include clarify *.py
+recursive-exclude tests *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]

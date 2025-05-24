@@ -58,7 +58,8 @@ class TestParser(unittest.TestCase):
 
     def test__get_or_create_result_jurisdiction(self):
         result_jurisdiction_name = "Test"
-        result_jurisdiction_element = lxml.etree.Element("County", { "name": result_jurisdiction_name })
+        # Use Precinct element to match what get_result_jurisdiction creates
+        result_jurisdiction_element = lxml.etree.Element("Precinct", { "name": result_jurisdiction_name })
         result_jurisdiction = Parser._parse_result_jurisdiction(result_jurisdiction_element)
 
         parser = Parser()
@@ -67,16 +68,19 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser._result_jurisdiction_lookup, {})
 
         # Test the "create" part.
-        parser._get_or_create_result_jurisdiction(result_jurisdiction_element)
+        created_jurisdiction = parser._get_or_create_result_jurisdiction(result_jurisdiction_element)
 
-        self.assertEqual(parser._result_jurisdictions, [ result_jurisdiction ])
-        self.assertEqual(parser._result_jurisdiction_lookup, { result_jurisdiction_name: result_jurisdiction })
+        self.assertEqual(len(parser._result_jurisdictions), 1)
+        self.assertEqual(parser._result_jurisdictions[0].name, result_jurisdiction_name)
+        self.assertEqual(parser._result_jurisdictions[0].level, "precinct")  # Should be precinct level
+        self.assertEqual(parser._result_jurisdiction_lookup[result_jurisdiction_name], created_jurisdiction)
 
         # Test the "get" part.
-        parser._get_or_create_result_jurisdiction(result_jurisdiction_element)
+        retrieved_jurisdiction = parser._get_or_create_result_jurisdiction(result_jurisdiction_element)
 
-        self.assertEqual(parser._result_jurisdictions, [ result_jurisdiction ])
-        self.assertEqual(parser._result_jurisdiction_lookup, { result_jurisdiction_name: result_jurisdiction })
+        # Should still have only one jurisdiction
+        self.assertEqual(len(parser._result_jurisdictions), 1)
+        self.assertEqual(retrieved_jurisdiction, created_jurisdiction)
 
     def test_add_result_jurisdiction(self):
         result_jurisdiction_name = "Test"

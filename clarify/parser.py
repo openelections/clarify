@@ -1,4 +1,8 @@
 from collections import namedtuple
+try:
+    from collections.abc import Callable
+except ImportError:
+    from collections import Callable
 import datetime
 import re
 
@@ -74,7 +78,10 @@ class Parser(object):
             the ``Timestamp`` element in the XML document
 
         """
-        return dateutil.parser.parse(tree.xpath('/ElectionResult/Timestamp')[0].text)
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            return dateutil.parser.parse(tree.xpath('/ElectionResult/Timestamp')[0].text)
 
     def _parse_election_name(self, tree):
         """
@@ -228,17 +235,18 @@ class Parser(object):
         """
         try:
             return self._result_jurisdiction_lookup[name]
-        except:
+        except KeyError:
             # if jurisdiction is in results but not precincts, add it.
             # mostly used for non-geographical quasi-jurisdictions.
             new_el = etree.Element('Precinct', {'name': name})
             parsed_el = self._parse_result_jurisdiction(new_el)
-            self.result_jurisdictions.append(parsed_el)
+            self.add_result_jurisdiction(parsed_el)  # This will update both list and lookup
             return parsed_el
 
     def _get_or_create_result_jurisdiction(self, el):
+        jurisdiction_name = el.attrib['name']
         try:
-            return self.get_result_jurisdiction(el.attrib['name'])
+            return self.get_result_jurisdiction(jurisdiction_name)
         except KeyError:
             # We don't yet know about this jurisdiction.  In some rare
             # cases, there is a mismatch between jurisdictions in the
@@ -416,8 +424,8 @@ class Parser(object):
         for vt_el in contest_el.xpath('./VoteType'):
             vote_type = vt_el.attrib['name']
             try:
-                votes=int(vt_el.attrib['votes'])
-            except:
+                votes = int(vt_el.attrib['votes'])
+            except (ValueError, KeyError):
                 votes = vt_el.attrib['votes']
             choice.add_result(Result(
                 contest=contest,
@@ -431,8 +439,8 @@ class Parser(object):
                 subjurisdiction = self.get_result_jurisdiction(subjurisdiction_el.attrib['name'])
                 subjurisdiction = self._get_or_create_result_jurisdiction(subjurisdiction_el)
                 try:
-                    votes=int(subjurisdiction_el.attrib['votes'])
-                except:
+                    votes = int(subjurisdiction_el.attrib['votes'])
+                except (ValueError, KeyError):
                     votes = subjurisdiction_el.attrib['votes']
                 choice.add_result(Result(
                     contest=contest,
@@ -447,7 +455,7 @@ class Parser(object):
     @classmethod
     def _parse_boolean(cls, s):
         """
-        Convert a string representing a boolean value to a boolo
+        Convert a string representing a boolean value to a boolean
 
         Args:
             s: A string

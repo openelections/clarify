@@ -4,20 +4,60 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Clarify"
-version = "0.6"
+version = "0.7.0"
 description = "A Python package for parsing election results from Clarity systems"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
 authors = [
     {name = "Derek Willis", email = "openelections@gmail.com"}
 ]
-requires-python = ">=3.0"
+keywords = ["elections", "Clarity", "results", "parser", "scraper"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Text Processing",
+    "Topic :: Text Processing :: Markup :: XML",
+]
 dependencies = [
     "requests>=2.31.0",
     "cssselect>=1.2.0",
-    "python-dateutil==2.4.2",
     "requests-futures>=1.0.1",
     "wheel>=0.40.0",
-    "lxml>=4.9.0"
+    "lxml>=4.9.0",
+    "python-dateutil>=2.8.2",
+    "build>=1.2.2.post1",
+    "twine>=6.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0.0",
+    "responses>=0.20.0",
+    "codecov",
+    "coverage"
 ]
 
 [project.urls]
 Homepage = "https://github.com/openelections/clarify"
+Repository = "https://github.com/openelections/clarify"
+Issues = "https://github.com/openelections/clarify/issues"
+
+[tool.setuptools.packages.find]
+include = ["clarify*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

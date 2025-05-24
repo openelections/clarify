@@ -1,6 +1,6 @@
-cssselect==0.9.1
-python-dateutil==2.4.2
-requests>=2.20.0
-requests-futures==0.9.5
-wheel==0.24.0
+cssselect>=1.2.0
+python-dateutil>=2.8.2
+requests>=2.31.0
+requests-futures>=1.0.1
 lxml>=4.9.0
+wheel>=0.40.0

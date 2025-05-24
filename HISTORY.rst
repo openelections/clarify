@@ -1,6 +1,20 @@
 History
 =======
 
+0.7.0 (2025-05-24)
+------------------
+
+- **Python 3 Compatibility**: Full Python 3.8+ support with compatibility fixes
+- **Dependency Updates**: Updated all dependencies to modern, secure versions
+- **Bug Fixes**: 
+  - Fixed bare exception handling in parser.py
+  - Fixed dictionary `.values()` indexing for Python 3 compatibility
+  - Fixed URL construction in jurisdiction.py
+  - Fixed collections.Callable import for Python 3.10+
+- **Build System**: Modernized to use pyproject.toml configuration
+- **Testing**: Updated test framework from nose to pytest
+- **Removed**: Python 2 compatibility code and deprecated dependencies
+
 0.5.0 (2018-XX-XX)
 ------------------
 
