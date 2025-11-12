@@ -53,6 +53,9 @@ Homepage = "https://github.com/openelections/clarify"
 Repository = "https://github.com/openelections/clarify"
 Issues = "https://github.com/openelections/clarify/issues"
 
+[project.scripts]
+clarify = "clarify.cli:main"
+
 [tool.setuptools.packages.find]
 include = ["clarify*"]
 
